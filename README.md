@@ -24,10 +24,6 @@ Tarayıcıda: http://localhost:8080
 
 ## Supabase Bağlantısı
 
-Dosya içindeki Supabase bilgileri zaten tanımlı:
-- `SB_URL`: https://hailzmuaqyejjmrbxfik.supabase.co
-- `SB_KEY`: sb_publishable_J-mn4WbxafSG4yoHdQu2kA_SvwOQy2o
-
 Gerçek zamanlı senkronizasyon ve paylaşım özelliği çalışır durumda.
 
 ## Dosya Yapısı
