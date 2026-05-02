@@ -1,0 +1,1729 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1.0"/>
+<title>ProjectFlow</title>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@0,400;0,600;0,700;0,900;1,400&family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<style>
+:root{
+  --bg:#f4f3ef;--surface:#fff;--surface2:#f8f7f4;--surface3:#eeecea;
+  --border:#e3e1d8;--border2:#cec9bc;
+  --text:#18170f;--text2:#6a6555;--text3:#a09888;
+  --accent:#2355d4;--accent-l:#eef2ff;--accent2:#6d28d9;
+  --green:#047857;--green-l:#ecfdf5;--green-m:#d1fae5;
+  --red:#b91c1c;--red-l:#fef2f2;--red-m:#fee2e2;
+  --yellow:#92400e;--yellow-l:#fffbeb;--yellow-m:#fde68a;
+  --orange:#9a3412;--orange-l:#fff7ed;--orange-m:#fed7aa;
+  --teal:#0e7490;--teal-l:#ecfeff;--teal-m:#cffafe;
+  --purple:#5b21b6;--purple-l:#f5f3ff;
+  --gray:#4b5563;--gray-l:#f3f4f6;
+  --r:8px;--rl:12px;
+  --sh-sm:0 1px 3px rgba(0,0,0,.07),0 1px 2px rgba(0,0,0,.04);
+  --sh:0 4px 16px rgba(0,0,0,.09),0 2px 6px rgba(0,0,0,.04);
+  --sh-lg:0 12px 40px rgba(0,0,0,.13),0 4px 12px rgba(0,0,0,.06);
+  --fd:'Fraunces',Georgia,serif;--fb:'DM Sans',system-ui,sans-serif;--fm:'DM Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:15px;-webkit-font-smoothing:antialiased}
+body{background:var(--bg);color:var(--text);font-family:var(--fb);min-height:100vh}
+input,select,button,textarea{font-family:var(--fb)}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--border2);border-radius:4px}
+.app{display:flex;flex-direction:column;min-height:100vh}
+/* ─ HEADER ─────────────────────────────────────────────── */
+.hdr{display:flex;align-items:center;padding:0 24px;height:56px;background:var(--surface);border-bottom:1px solid var(--border);position:sticky;top:0;z-index:300;gap:12px;box-shadow:var(--sh-sm)}
+.logo{display:flex;align-items:center;gap:8px;font-family:var(--fd);font-weight:700;font-size:1.15rem;color:var(--text);letter-spacing:-.02em;flex-shrink:0}
+.lm{width:28px;height:28px;border-radius:7px;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff;font-size:.7rem;font-weight:700;flex-shrink:0}
+.hdr-tabs{display:flex;gap:2px;background:var(--surface3);border:1px solid var(--border);border-radius:var(--r);padding:3px}
+.htab{padding:5px 14px;border:none;border-radius:6px;font-size:.82rem;font-weight:500;cursor:pointer;transition:all .18s;color:var(--text2);background:transparent;white-space:nowrap}
+.htab.on{background:var(--surface);color:var(--text);box-shadow:var(--sh-sm);font-weight:600}
+.hdr-r{display:flex;align-items:center;gap:8px;margin-left:auto}
+.dchip{background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;color:var(--text2);font-size:.72rem;font-family:var(--fm)}
+.uchip{display:flex;align-items:center;gap:6px;padding:4px 10px 4px 6px;border-radius:20px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;font-size:.8rem;color:var(--text2);transition:all .15s}
+.uchip:hover{border-color:var(--border2);color:var(--text)}
+.uav{width:22px;height:22px;border-radius:50%;background:linear-gradient(135deg,var(--accent),var(--accent2));display:grid;place-items:center;color:#fff;font-size:.63rem;font-weight:700;flex-shrink:0}
+/* ─ PROJECT BAR ─────────────────────────────────────────── */
+.pbar{background:var(--surface);border-bottom:1px solid var(--border);padding:0 24px;display:flex;align-items:center;overflow-x:auto;min-height:44px}
+.pchip{padding:10px 12px;border:none;background:transparent;color:var(--text2);font-size:.82rem;font-weight:500;cursor:pointer;transition:all .15s;white-space:nowrap;border-bottom:2px solid transparent;display:flex;align-items:center;gap:5px;max-width:180px}
+.pchip:hover{color:var(--text)}.pchip.on{color:var(--accent);border-bottom-color:var(--accent);font-weight:600}
+.pchip-name{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+.pchip.ap{color:var(--text3);font-size:.8rem;max-width:none}.pchip.ap:hover{color:var(--accent)}
+.pname-inp{border:none;background:transparent;font-family:var(--fb);font-size:.82rem;font-weight:600;color:var(--accent);outline:none;min-width:60px;max-width:160px;padding:0}
+.proj-del-btn{opacity:0;width:16px;height:16px;border-radius:50%;border:none;background:var(--red-l);color:var(--red);font-size:.65rem;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .15s;flex-shrink:0}
+.pchip:hover .proj-del-btn{opacity:1}.proj-del-btn:hover{background:var(--red);color:#fff}
+/* ─ MAIN ─────────────────────────────────────────────────── */
+.main{flex:1;padding:24px}
+/* ─ BUTTONS ──────────────────────────────────────────────── */
+.btn{display:inline-flex;align-items:center;gap:5px;padding:7px 14px;border-radius:var(--r);font-weight:500;font-size:.83rem;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn-p{background:var(--accent);color:#fff}.btn-p:hover{background:#1a45c0;box-shadow:0 2px 8px rgba(35,85,212,.3)}
+.btn-p:disabled{background:var(--border2);color:var(--text3);cursor:not-allowed;box-shadow:none}
+.btn-g{background:transparent;color:var(--text2);border:1px solid var(--border)}.btn-g:hover{background:var(--surface2);border-color:var(--border2);color:var(--text)}
+.btn-gr{background:var(--green-l);color:var(--green);border:1px solid rgba(4,120,87,.25)}.btn-gr:hover{background:var(--green-m)}
+.btn-sh{background:var(--yellow-l);color:var(--yellow);border:1px solid rgba(146,64,14,.2)}.btn-sh:hover{background:var(--yellow-m)}
+.btn-tl{background:var(--teal-l);color:var(--teal);border:1px solid rgba(14,116,144,.2)}.btn-tl:hover{background:var(--teal-m)}
+.btn-rd{background:var(--red-l);color:var(--red);border:1px solid rgba(185,28,28,.2)}.btn-rd:hover{background:var(--red-m)}
+.btn-or{background:var(--orange-l);color:var(--orange);border:1px solid rgba(154,52,18,.2)}.btn-or:hover{background:var(--orange-m)}
+.btn-sm{padding:5px 10px;font-size:.78rem}
+.ibtn{width:26px;height:26px;border-radius:6px;border:none;background:transparent;color:var(--text3);cursor:pointer;display:grid;place-items:center;font-size:.8rem;transition:all .15s;flex-shrink:0}
+.ibtn:hover{background:var(--surface3);color:var(--text)}.ibtn.r:hover{background:var(--red-l);color:var(--red)}.ibtn.b:hover{background:var(--accent-l);color:var(--accent)}
+/* ─ INPUTS ──────────────────────────────────────────────── */
+.inp,.sel{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:var(--r);padding:8px 11px;font-size:.85rem;outline:none;transition:border-color .15s,box-shadow .15s;width:100%}
+.inp:focus,.sel:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(35,85,212,.1)}
+.inp::placeholder{color:var(--text3)}.sel option{background:var(--surface)}
+.lbl{font-size:.75rem;color:var(--text2);font-weight:500;margin-bottom:4px;display:block}
+.seg-ctrl{display:flex;border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+.seg-btn{flex:1;padding:7px 12px;border:none;background:transparent;color:var(--text2);font-size:.82rem;cursor:pointer;transition:all .14s}
+.seg-btn.on{background:var(--accent);color:#fff}
+/* ─ MODAL ────────────────────────────────────────────────── */
+.mbd{position:fixed;inset:0;background:rgba(15,14,10,.38);backdrop-filter:blur(6px);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px;animation:fi .15s ease}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:24px;width:480px;max-width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--sh-lg);animation:su .2s ease}
+.modal-sm{width:380px}.modal-lg{width:720px;max-width:96vw}
+.modal-title{font-family:var(--fd);font-weight:700;font-size:1.1rem;margin-bottom:18px}
+.fr{display:grid;gap:12px;margin-bottom:12px}.fr2{grid-template-columns:1fr 1fr}
+.form-foot{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;padding-top:16px;border-top:1px solid var(--border)}
+@keyframes fi{from{opacity:0}to{opacity:1}}
+@keyframes su{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+/* ─ BANNERS ──────────────────────────────────────────────── */
+.banner{border-radius:var(--r);padding:10px 14px;display:flex;align-items:center;gap:10px;font-size:.83rem;font-weight:500;margin-bottom:14px}
+.bn-d{background:var(--red-l);border:1px solid rgba(185,28,28,.2);color:var(--red)}
+.bn-ok{background:var(--green-l);border:1px solid rgba(4,120,87,.2);color:var(--green)}
+.bn-i{background:var(--accent-l);border:1px solid rgba(35,85,212,.15);color:var(--accent)}
+.bn-w{background:var(--yellow-l);border:1px solid rgba(146,64,14,.2);color:var(--yellow)}
+.bn-tl{background:var(--teal-l);border:1px solid rgba(14,116,144,.2);color:var(--teal)}
+.bn-or{background:var(--orange-l);border:1px solid rgba(154,52,18,.2);color:var(--orange)}
+/* ─ COLLAPSIBLE PANEL ───────────────────────────────────── */
+.cpanel{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);box-shadow:var(--sh-sm);margin-bottom:10px;overflow:hidden}
+.cpanel-hdr{display:flex;align-items:center;padding:11px 15px;cursor:pointer;user-select:none;gap:8px;transition:background .12s;border-bottom:1px solid transparent}
+.cpanel-hdr:hover{background:var(--surface2)}.cpanel-hdr.oh{border-bottom-color:var(--border)}
+.cpanel-title{font-weight:600;font-size:.85rem;flex:1}
+.carrow{font-size:.65rem;color:var(--text3);transition:transform .2s;flex-shrink:0}
+.carrow.open{transform:rotate(90deg)}
+/* ─ ACCORDION ───────────────────────────────────────────── */
+.acc{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:12px;overflow:hidden;box-shadow:var(--sh-sm)}
+.acc-hdr{display:flex;align-items:center;padding:12px 16px;cursor:pointer;user-select:none;gap:8px;transition:background .12s}
+.acc-hdr:hover{background:var(--surface2)}
+.acc-arr{font-size:.65rem;color:var(--text3);transition:transform .2s;flex-shrink:0}
+.acc-arr.open{transform:rotate(90deg)}
+.acc-body{border-top:1px solid var(--border)}
+/* ─ SUMMARY CARDS ───────────────────────────────────────── */
+.sum-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+.scard{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 16px;box-shadow:var(--sh-sm)}
+.scard-val{font-family:var(--fd);font-size:1.4rem;font-weight:700;line-height:1}
+.scard-lbl{font-size:.72rem;color:var(--text2);margin-top:4px}
+.scard-sub{font-size:.68rem;font-family:var(--fm);color:var(--text3);margin-top:2px}
+/* ─ TEAM SUMMARY TABLE ───────────────────────────────────── */
+.team-sum-table{width:100%;border-collapse:collapse;font-size:.78rem}
+.team-sum-table th{font-size:.68rem;color:var(--text3);font-weight:600;text-transform:uppercase;letter-spacing:.05em;padding:7px 10px;border-bottom:2px solid var(--border);text-align:right;white-space:nowrap}
+.team-sum-table th:first-child{text-align:left}
+.team-sum-table td{padding:8px 10px;border-bottom:1px solid var(--border);vertical-align:middle;text-align:right}
+.team-sum-table td:first-child{text-align:left}
+.team-sum-table tr:last-child td{border-bottom:none}
+.team-sum-table tr:hover td{background:var(--surface2)}
+.ts-name{font-weight:700;font-size:.82rem;max-width:130px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.ts-num{font-family:var(--fm);font-size:.78rem;white-space:nowrap;font-weight:500}
+.ts-badge{display:inline-flex;align-items:center;gap:3px;padding:3px 8px;border-radius:5px;font-size:.68rem;font-family:var(--fm);font-weight:600;white-space:nowrap}
+.ts-ok{background:var(--green-l);color:var(--green)}
+.ts-warn{background:var(--orange-l);color:var(--orange)}
+.ts-delay{background:var(--red-l);color:var(--red)}
+.ts-neutral{background:var(--surface3);color:var(--text2)}
+.ts-sub{font-size:.65rem;color:var(--text3);display:block;margin-top:1px;font-family:var(--fm)}
+/* ─ BADGES ──────────────────────────────────────────────── */
+.badge{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:4px;font-size:.65rem;font-family:var(--fm);font-weight:600}
+.b-bl{background:var(--accent-l);color:var(--accent)}.b-gr{background:var(--green-l);color:var(--green)}
+.b-rd{background:var(--red-l);color:var(--red)}.b-yl{background:var(--yellow-l);color:var(--yellow)}
+.b-gy{background:var(--surface3);color:var(--text2)}.b-tl{background:var(--teal-l);color:var(--teal)}
+.b-or{background:var(--orange-l);color:var(--orange)}.b-pu{background:var(--purple-l);color:var(--purple)}
+.divider{height:1px;background:var(--border);margin:12px 0}
+/* ─ GANTT ─────────────────────────────────────────────────── */
+.gl-layout{display:grid;grid-template-columns:300px 1fr;gap:16px;align-items:start}
+.task-panel{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:14px 15px;box-shadow:var(--sh-sm)}
+.panel-hdr{display:flex;align-items:center;gap:6px;margin-bottom:8px}
+.ph-title{font-weight:600;font-size:.85rem;flex:1}
+.task-list{display:flex;flex-direction:column;gap:5px;max-height:340px;overflow-y:auto;padding-right:2px}
+.titem{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:9px 11px;display:flex;flex-direction:column;gap:3px;transition:all .15s}
+.titem:hover{border-color:var(--border2);box-shadow:var(--sh-sm)}
+.titem.delayed{border-color:rgba(185,28,28,.4);background:var(--red-l)}
+.titem.extended{border-color:rgba(154,52,18,.4);background:var(--orange-l)}
+.titem.new-after-bl{border-color:rgba(35,85,212,.3);background:var(--accent-l)}
+.titem-top{display:flex;align-items:flex-start;gap:5px}
+.titem-num{font-family:var(--fm);font-size:.68rem;color:var(--text3);width:18px;flex-shrink:0;padding-top:2px;text-align:right}
+.titem-body{flex:1;min-width:0}
+.titem-name{font-weight:600;font-size:.83rem;word-break:break-word;line-height:1.35}
+.titem-team{font-size:.67rem;font-family:var(--fm);color:var(--accent);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px}
+.titem-meta{font-size:.7rem;color:var(--text2);margin-top:2px;font-family:var(--fm)}
+.titem-flags{display:flex;gap:4px;flex-wrap:wrap;margin-top:3px}
+.titem-actions{display:flex;gap:2px;flex-shrink:0}
+/* GANTT TABLE */
+.gantt-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);overflow:hidden;box-shadow:var(--sh-sm)}
+.gantt-top{display:flex;align-items:center;justify-content:space-between;padding:10px 16px;border-bottom:1px solid var(--border);gap:8px;flex-wrap:wrap;background:var(--surface2)}
+.gtable{border-collapse:collapse;table-layout:fixed}
+.mrow th{background:var(--surface3);border-bottom:1px solid var(--border);font-size:.65rem;font-weight:700;font-family:var(--fm);color:var(--text2);letter-spacing:.05em;padding:4px 0;text-align:center}
+.mrow th.lh{text-align:left;padding-left:14px;font-size:.7rem;color:var(--text)}
+.drow th{background:var(--surface2);border-bottom:1px solid var(--border);font-size:.6rem;font-family:var(--fm);color:var(--text3);font-weight:400;padding:3px 0;text-align:center}
+.drow th.lh{text-align:left;padding-left:14px;color:var(--text2);font-size:.68rem}
+.grow td{border-bottom:1px solid rgba(227,225,216,.7)}
+.grow:last-child td{border-bottom:none}.grow:hover td{background:rgba(248,247,244,.5)}
+.glabel{padding:7px 10px;width:190px;min-width:190px;border-right:1px solid var(--border);vertical-align:middle;cursor:default}
+.glabel .gn{font-weight:600;font-size:.79rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:130px;color:var(--text)}
+.glabel .gm{font-size:.66rem;color:var(--text2);font-family:var(--fm);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:160px}
+.glabel-inner{display:flex;align-items:center;gap:5px}
+.impact-btn{width:20px;height:20px;border-radius:50%;border:none;background:var(--yellow-l);color:var(--yellow);font-size:.7rem;cursor:pointer;display:grid;place-items:center;flex-shrink:0;transition:all .15s;box-shadow:0 0 0 2px rgba(146,64,14,.2)}
+.impact-btn:hover{background:var(--yellow-m);transform:scale(1.1)}
+.gbar-td{padding:0;vertical-align:middle}
+.g-bar-seg{cursor:pointer;transition:filter .1s}
+.g-bar-seg:hover{filter:brightness(1.1)}
+/* LEGEND */
+.g-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:.7rem;color:var(--text3)}
+.g-legend-i{display:inline-flex;align-items:center;gap:4px}
+.g-legend-d{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+/* ─ TEAM PANEL ──────────────────────────────────────────── */
+.team-tag-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;overflow:hidden}
+.team-tag-item:hover{border-color:var(--border2)}
+.team-tag-header{display:flex;align-items:center;padding:7px 10px;gap:8px}
+.team-tag-name{font-size:.82rem;font-weight:600;flex:1;word-break:break-word;overflow-wrap:break-word;max-width:200px;line-height:1.3}
+.team-tag-del{width:20px;height:20px;border-radius:4px;border:none;background:transparent;color:var(--text3);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.75rem;transition:all .14s;flex-shrink:0}
+.team-tag-del:hover{background:var(--red-l);color:var(--red)}
+.team-members{padding:0 10px 7px;display:flex;flex-wrap:wrap;gap:5px}
+.member-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:20px;background:var(--accent-l);border:1px solid rgba(35,85,212,.2);font-size:.72rem;color:var(--accent)}
+.member-del{width:14px;height:14px;border:none;background:transparent;cursor:pointer;color:var(--accent);font-size:.7rem;display:flex;align-items:center;justify-content:center;border-radius:50%;flex-shrink:0}
+.member-del:hover{background:rgba(35,85,212,.15)}
+.member-add-row{display:flex;gap:5px;padding:0 10px 7px}
+.team-add-row{display:flex;gap:6px;margin-top:8px}
+/* ─ TRACKER ─────────────────────────────────────────────── */
+.tk-top{display:flex;gap:8px;margin-bottom:16px;align-items:center;flex-wrap:wrap}
+.fpill{padding:4px 10px;border-radius:20px;border:1px solid var(--border);background:transparent;color:var(--text3);font-size:.75rem;cursor:pointer;transition:all .15s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px}
+.fpill:hover{border-color:var(--border2);color:var(--text2)}.fpill.on{background:var(--surface);border-color:var(--border2);color:var(--text);box-shadow:var(--sh-sm);font-weight:500}
+.gsum{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:14px;overflow:hidden;box-shadow:var(--sh-sm)}
+.gsum-hdr{display:flex;align-items:center;padding:10px 16px;cursor:pointer;gap:8px;background:var(--surface2);border-bottom:1px solid transparent;transition:all .12s}
+.gsum-hdr:hover{background:var(--surface3)}.gsum-hdr.open{border-bottom-color:var(--border)}
+.gsum-title{font-weight:600;font-size:.82rem;color:var(--text2);text-transform:uppercase;letter-spacing:.06em;flex:1}
+.gsum-body{padding:12px 16px;display:flex;flex-direction:column;gap:7px}
+.tsrow{display:flex;align-items:center;gap:10px}
+.tsrow-name{font-size:.8rem;font-weight:600;min-width:80px;max-width:120px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tsrow-stats{display:flex;align-items:center;gap:10px;flex:1;flex-wrap:wrap}
+.tss{font-size:.72rem;font-family:var(--fm);color:var(--text2);display:flex;align-items:center;gap:4px}
+.tdot{width:6px;height:6px;border-radius:50%;flex-shrink:0}
+.tdot-g{background:var(--green)}.tdot-r{background:var(--red)}
+.pb-wrap{background:var(--surface3);border-radius:4px;height:5px;overflow:hidden}
+.pb-fill{height:100%;border-radius:4px;transition:width .4s ease}
+.team-sec{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);margin-bottom:12px;overflow:hidden;box-shadow:var(--sh-sm);transition:border-color .2s}
+.team-sec.done-t{border-color:rgba(4,120,87,.4)}
+.team-hdr{display:flex;align-items:stretch;cursor:pointer;user-select:none;transition:background .12s}
+.team-hdr:hover{background:var(--surface2)}.team-hdr.open-h{border-bottom:1px solid var(--border)}
+.tname-cell{font-weight:700;font-size:.88rem;padding:11px 14px;flex:1;display:flex;align-items:center;justify-content:flex-start;gap:7px;border-right:1px solid var(--border);min-width:0}
+.tname-cell span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;text-align:left;display:block}
+.tstat{padding:8px 10px;border-right:1px solid var(--border);text-align:center;min-width:70px;display:flex;flex-direction:column;justify-content:center}
+.tstat-v{font-family:var(--fd);font-weight:700;font-size:.92rem}
+.tstat-l{font-size:.62rem;color:var(--text3);margin-top:1px;font-family:var(--fm)}
+.tprog{padding:8px 10px;border-right:1px solid var(--border);display:flex;align-items:center;gap:8px;min-width:115px}
+.tprog-pct{font-size:.73rem;font-family:var(--fm);min-width:32px;text-align:right}
+.tdel-cell{padding:8px 8px;display:flex;align-items:center}
+.kb-board{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px 14px}
+.kb-col{display:flex;flex-direction:column}
+.kb-col-hdr{font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text3);padding:2px 0;margin-bottom:8px;display:flex;align-items:center;justify-content:space-between}
+.kb-cnt{background:var(--surface3);border-radius:4px;padding:1px 6px;font-family:var(--fm);font-size:.67rem;color:var(--text2)}
+.ki{background:var(--surface);border:1px solid var(--border);border-radius:var(--r);padding:9px 11px;cursor:grab;transition:all .15s;margin-bottom:6px;box-shadow:var(--sh-sm)}
+.ki:hover{border-color:var(--border2);box-shadow:var(--sh);transform:translateY(-1px)}
+.ki.dragging{opacity:.4;cursor:grabbing;box-shadow:none;transform:none}
+.ki-top{display:flex;align-items:flex-start;gap:7px}
+.cb{width:20px;height:20px;flex-shrink:0;cursor:pointer;display:flex;align-items:center;justify-content:center;border-radius:5px;margin-top:1px}
+.cb:hover{background:var(--surface3)}
+.cb-box{width:16px;height:16px;border-radius:4px;border:1.5px solid;display:flex;align-items:center;justify-content:center;transition:all .12s;pointer-events:none;font-size:.6rem;font-weight:700}
+.cb-bug{border-color:var(--red)}.cb-task{border-color:var(--yellow)}
+.cb-press{background:rgba(35,85,212,.15)!important;border-color:var(--accent)!important}
+.cb-done{background:var(--green)!important;border-color:var(--green)!important;color:#fff}
+.cb-p1{background:rgba(146,64,14,.1)}.cb-p2{background:rgba(154,52,18,.12)}
+.ki-title{font-size:.82rem;font-weight:500;flex:1;line-height:1.4;word-break:break-word}
+.ki-tags{display:flex;gap:4px;flex-wrap:wrap;margin-top:4px}
+.tyb{font-size:.63rem;font-weight:700;padding:2px 6px;border-radius:4px;font-family:var(--fm);flex-shrink:0;letter-spacing:.04em}
+.tyb-bug{background:var(--red-l);color:var(--red)}.tyb-task{background:var(--yellow-l);color:var(--yellow)}
+.ki-foot{display:flex;align-items:center;justify-content:space-between;margin-top:6px;gap:5px}
+.ki-meta{font-size:.67rem;color:var(--text3);font-family:var(--fm)}
+.ki-ctrl{display:flex;gap:3px;align-items:center}
+.back-b,.del-b,.edit-b{width:21px;height:21px;border-radius:5px;cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.7rem;transition:all .14s;flex-shrink:0}
+.back-b{border:1px solid var(--border);background:var(--surface2);color:var(--text3)}
+.back-b:hover{border-color:var(--orange);color:var(--orange);background:var(--yellow-l)}
+.del-b{border:1px solid transparent;background:transparent;color:var(--text3);opacity:0}
+.ki:hover .del-b{opacity:1}.del-b:hover{background:var(--red-l);color:var(--red);border-color:rgba(185,28,28,.2)}
+.edit-b{border:1px solid var(--border);background:var(--surface2);color:var(--accent);opacity:0}
+.ki:hover .edit-b{opacity:1}.edit-b:hover{background:var(--accent-l);border-color:rgba(35,85,212,.3)}
+.add-ki-btn{width:100%;padding:7px;border:1.5px dashed var(--border);border-radius:var(--r);background:transparent;color:var(--text3);font-size:.77rem;cursor:pointer;transition:all .14s}
+.add-ki-btn:hover{border-color:var(--accent);color:var(--accent);background:var(--accent-l)}
+.drop-z{min-height:34px;border-radius:var(--r);border:1.5px dashed transparent;transition:all .14s}
+.drop-z.dov{border-color:var(--accent);background:var(--accent-l)}
+/* ─ IMPACT MODAL ─────────────────────────────────────────── */
+.impact-list{display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto;margin:14px 0}
+.impact-item{display:flex;align-items:center;gap:10px;padding:10px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface2);cursor:pointer;transition:all .14s}
+.impact-item:hover{border-color:var(--accent);background:var(--accent-l)}
+.impact-item.selected{border-color:var(--accent);background:var(--accent-l)}
+.impact-item-check{width:18px;height:18px;border-radius:4px;border:2px solid var(--border2);background:transparent;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .14s;font-size:.65rem;color:#fff;font-weight:700}
+.impact-item.selected .impact-item-check{background:var(--accent);border-color:var(--accent)}
+.impact-item-info{flex:1;min-width:0}
+.impact-item-name{font-weight:600;font-size:.85rem;word-break:break-word}
+.impact-item-meta{font-size:.72rem;color:var(--text2);font-family:var(--fm);margin-top:2px}
+/* ─ DASHBOARD ────────────────────────────────────────────── */
+.dash-hero{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:32px}
+.dash-hero-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px;box-shadow:var(--sh-sm);position:relative;overflow:hidden}
+.dash-hero-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;border-radius:var(--rl) var(--rl) 0 0}
+.dhc-active::before{background:var(--green)}
+.dhc-delayed::before{background:var(--red)}
+.dhc-notstart::before{background:var(--text3)}
+.dhc-done::before{background:var(--teal)}
+.dhc-total::before{background:var(--accent)}
+.dhc-val{font-family:var(--fd);font-size:2rem;font-weight:800;line-height:1;margin-top:4px}
+.dhc-lbl{font-size:.75rem;color:var(--text2);margin-top:6px;font-weight:500}
+.dash-section{margin-bottom:28px}
+.dash-section-hdr{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+.dash-section-title{font-family:var(--fd);font-weight:700;font-size:1rem;color:var(--text)}
+.dash-section-count{font-size:.78rem;color:var(--text3);font-family:var(--fm)}
+.dash-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.dash-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:18px;box-shadow:var(--sh-sm);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.dash-card:hover{box-shadow:var(--sh);transform:translateY(-2px);border-color:var(--border2)}
+.dash-card-strip{position:absolute;top:0;left:0;right:0;height:3px}
+.dash-card-name{font-weight:700;font-size:.95rem;color:var(--text);margin-bottom:10px;word-break:break-word;line-height:1.3}
+.dash-card-rows{display:flex;flex-direction:column;gap:5px}
+.dash-card-row{display:flex;justify-content:space-between;align-items:center;font-size:.75rem}
+.dash-card-row-lbl{color:var(--text2)}
+.dash-card-row-val{font-family:var(--fm);color:var(--text);font-size:.73rem;font-weight:500}
+.dash-card-pb{margin-top:10px}
+.dash-card-pb-hdr{display:flex;justify-content:space-between;font-size:.7rem;color:var(--text2);margin-bottom:4px}
+/* ─ MISC ─────────────────────────────────────────────────── */
+.no-hint{color:var(--text3);font-size:.78rem;text-align:center;padding:10px;border:1px dashed var(--border);border-radius:var(--r);background:var(--surface2)}
+.share-url{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:10px 12px;font-family:var(--fm);font-size:.75rem;word-break:break-all;line-height:1.5}
+.sync-dot{width:8px;height:8px;border-radius:50%;background:var(--green);flex-shrink:0;transition:background .3s}
+.sync-dot.syncing{background:var(--yellow);animation:pulse 1s infinite}
+.sync-dot.error{background:var(--red)}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.sync-chip{display:flex;align-items:center;gap:5px;font-size:.7rem;color:var(--text3);font-family:var(--fm)}
+.wscreen{position:fixed;inset:0;background:var(--bg);z-index:1000;display:flex;align-items:center;justify-content:center;padding:16px}
+.wbox{background:var(--surface);border:1px solid var(--border);border-radius:16px;padding:40px;width:420px;max-width:100%;text-align:center;box-shadow:var(--sh-lg);animation:su .3s ease}
+.wlogo{font-family:var(--fd);font-weight:900;font-size:2.2rem;color:var(--text);letter-spacing:-.04em;margin-bottom:6px}
+.wlogo em{font-style:italic;color:var(--accent)}
+@media(max-width:1024px){.dash-hero{grid-template-columns:repeat(3,1fr)}.dash-grid{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:960px){.gl-layout{grid-template-columns:1fr}.kb-board{grid-template-columns:repeat(2,1fr)}.sum-grid{grid-template-columns:repeat(2,1fr)}.hdr{padding:0 14px}.main{padding:14px}.dash-hero{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:600px){.kb-board{grid-template-columns:1fr}.dash-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo, useRef, useEffect, useCallback } = React;
+
+/* ══ UTILS ══════════════════════════════════════════════ */
+const uid=()=>Math.random().toString(36).slice(2,9);
+const todayStr=()=>new Date().toISOString().slice(0,10);
+const fmt=d=>d?new Date(d).toLocaleDateString('tr-TR',{day:'2-digit',month:'short'}):'—';
+const fmtFull=d=>d?new Date(d).toLocaleDateString('tr-TR',{day:'2-digit',month:'long',year:'numeric'}):'';
+const addDays=(s,n)=>{const d=new Date(s);d.setDate(d.getDate()+n);return d.toISOString().slice(0,10);};
+const diffDays=(a,b)=>Math.round((new Date(b)-new Date(a))/86400000);
+const MAX_DAYS=365,MAX_NAME=100;
+const maxSprints=sw=>Math.floor(365/(sw*7));
+const clampDays=v=>Math.max(1,Math.min(MAX_DAYS,parseInt(v)||1));
+const clampSprints=(v,sw)=>Math.max(1,Math.min(maxSprints(sw),parseInt(v)||1));
+const toDays=(val,mode,sw=2)=>mode==='sprints'?clampSprints(val,sw)*sw*7:clampDays(val);
+const STATUSES=['todo','inprogress','review','done'];
+const SL={todo:'To Do',inprogress:'In Progress',review:'In Review',done:'Completed'};
+const SK='pf_v15';
+const loadAll=()=>{try{const v=localStorage.getItem(SK);return v?JSON.parse(v):null;}catch{return null;}};
+const saveAll=v=>{try{localStorage.setItem(SK,JSON.stringify(v));}catch{}};
+
+/* ══ SUPABASE ═══════════════════════════════════════════ */
+const SB_URL='https://hailzmuaqyejjmrbxfik.supabase.co';
+const SB_KEY='sb_publishable_J-mn4WbxafSG4yoHdQu2kA_SvwOQy2o';
+const sb=supabase.createClient(SB_URL,SB_KEY);
+
+// Upsert a single project to Supabase (includes share_key for RLS later)
+async function sbSaveProj(proj){
+  try{
+    await sb.from('projects').upsert({
+      id:proj.id,
+      name:proj.name,
+      share_key:proj.shareKey||proj.id,
+      data:proj,
+      updated_at:new Date().toISOString()
+    },{onConflict:'id'});
+  }catch(e){console.warn('Supabase save error:',e);}
+}
+
+// Delete a project from Supabase
+async function sbDeleteProj(id){
+  try{await sb.from('projects').delete().eq('id',id);}catch(e){console.warn('Supabase delete error:',e);}
+}
+
+// Load all projects from Supabase (owner view — loads by ID list stored in localStorage)
+async function sbLoadAll(ids){
+  try{
+    let q=sb.from('projects').select('data').order('updated_at',{ascending:true});
+    if(ids&&ids.length>0)q=q.in('id',ids);
+    else return []; // no owned projects
+    const{data,error}=await q;
+    if(error||!data)return null;
+    return data.map(r=>r.data);
+  }catch{return null;}
+}
+
+// Load a single project by shareKey (for guests opening a share link)
+async function sbLoadByShareKey(shareKey){
+  try{
+    // Try share_key column first
+    const{data,error}=await sb.from('projects').select('data').eq('share_key',shareKey).maybeSingle();
+    if(!error&&data)return data.data;
+    // Fallback: try matching by project id (for older projects without shareKey)
+    const{data:data2,error:error2}=await sb.from('projects').select('data').eq('id',shareKey).maybeSingle();
+    if(!error2&&data2)return data2.data;
+    console.warn('sbLoadByShareKey: not found for key=',shareKey,'errors:',error,error2);
+    return null;
+  }catch(e){console.warn('sbLoadByShareKey error:',e);return null;}
+}
+const defProj=(name='Proje 1')=>({id:uid(),name,shareKey:uid()+uid(),projectTeams:[],tasks:[],baselineEnd:null,baselineTasks:null,completedAt:null,teams:[],items:[]});
+const defState=()=>({userName:'',projects:[],activeProjId:null,activeTab:'dashboard'});
+const encProj=p=>{try{return btoa(unescape(encodeURIComponent(JSON.stringify(p))));}catch{return null;}};
+const decProj=s=>{try{return JSON.parse(decodeURIComponent(escape(atob(s))));}catch{return null;}};
+
+/* ══ SCHEDULE ═══════════════════════════════════════════ */
+function computeSched(tasks){return tasks.map(t=>{const dur=Math.max(1,parseInt(t.durationDays)||1);return{...t,start:t.startDate,end:addDays(t.startDate,dur-1),durationDays:dur};});}
+const pEnd=s=>s.length?s.reduce((m,t)=>t.end>m?t.end:m,s[0].end):null;
+const pStart=s=>s.length?s.reduce((m,t)=>t.start<m?t.start:m,s[0].start):null;
+
+/* Task status helpers */
+function getTS(task,baselineEnd,baselineTasks){
+  if(!baselineEnd)return{delayed:false,extended:false,isNew:false};
+  const orig=(baselineTasks||[]).find(o=>o.id===task.id);
+  const isNew=!orig;
+  const delayed=task.end>baselineEnd;
+  // extended = ONLY when the actual duration in days increased vs baseline snapshot
+  // A postponed task has same durationDays → extended=false ✓
+  const extended=!!orig&&task.durationDays>orig.durationDays;
+  return{delayed,extended,isNew};
+}
+
+/* ══ BAR SEGMENTS ═══════════════════════════════════════ */
+const BAR={green:'linear-gradient(90deg,#047857,#059669)',blue:'linear-gradient(90deg,#1d4ed8,#6d28d9)',orange:'linear-gradient(90deg,#c2410c,#ea580c)',red:'linear-gradient(90deg,#991b1b,#b91c1c)',gray:'linear-gradient(90deg,#9ca3af,#6b7280)'};
+
+function buildSegs(task,ps,today,orig,isNew,baselineEnd,DAY,completedAt){
+  const off=d=>diffDays(ps,d);
+  const tS=off(task.start),tE=off(task.end),todOff=off(today);
+
+  // Grey: segments strictly AFTER completedAt → gray
+  // On completedAt day: orange/red stay as-is (they mean delay/extension),
+  //                     green/blue → green (task completed that day on time)
+  const applyGrey=(segs)=>{
+    if(!completedAt)return segs;
+    const cutOff=off(completedAt);
+    return segs.map(seg=>{
+      const segDay=Math.round(seg.left/DAY);
+      if(segDay>cutOff)return{...seg,color:'gray'};  // after completedAt → gray
+      if(segDay===cutOff){
+        // On completedAt day: keep red/orange (problem indicators), turn others green
+        if(seg.color==='red'||seg.color==='orange')return seg;
+        return{...seg,color:'green'};
+      }
+      return seg;
+    });
+  };
+
+  if(!baselineEnd&&!orig){
+    return applyGrey([{color:'blue',left:tS*DAY,width:(tE-tS+1)*DAY}]);
+  }
+
+  const blOff=baselineEnd?off(baselineEnd):null;
+
+  // planEnd: same original duration applied from current start.
+  // A postponed task (same duration, shifted start) → planEnd shifts too → no orange.
+  // An extended task (longer duration) → planEnd > shifted end → orange appears.
+  let planEnd;
+  if(orig){
+    const origDuration=diffDays(orig.start,orig.end);
+    planEnd=addDays(task.start,origDuration);
+  } else if(isNew){
+    planEnd=baselineEnd;
+  } else {
+    planEnd=null;
+  }
+  if(!planEnd)return applyGrey([{color:'blue',left:tS*DAY,width:(tE-tS+1)*DAY}]);
+
+  const planOff=off(planEnd);
+  const segs=[];
+
+  // The "safe zone" ends at min(planEnd, baselineEnd)
+  // GREEN goes up to yesterday within safe zone
+  const safeEnd=blOff!==null?Math.min(planOff,blOff):planOff;
+  const gTo=Math.min(todOff-1,safeEnd,tE);
+  if(gTo>=tS)segs.push({color:'green',left:tS*DAY,width:(gTo-tS+1)*DAY});
+
+  // BLUE: future within safe zone
+  const bFrom=Math.max(tS,todOff),bTo=Math.min(safeEnd,tE);
+  if(bTo>=bFrom)segs.push({color:'blue',left:bFrom*DAY,width:(bTo-bFrom+1)*DAY});
+
+  // ORANGE: task duration exceeded (task.end > planEnd) but within baselineEnd
+  // Only shows when actual duration increased, not when task was merely postponed
+  if(blOff!==null&&planOff<blOff&&tE>planOff){
+    const orFrom=planOff+1,orTo=Math.min(blOff,tE);
+    if(orTo>=orFrom)segs.push({color:'orange',left:orFrom*DAY,width:(orTo-orFrom+1)*DAY});
+  }
+
+  // RED: task.end > baselineEnd — always show regardless of why (postpone OR extend)
+  if(blOff!==null&&tE>blOff){
+    segs.push({color:'red',left:(blOff+1)*DAY,width:(tE-blOff)*DAY});
+  }
+
+  // Edge: no baseline → planEnd exceeded is orange up to infinity
+  if(blOff===null&&tE>planOff){
+    segs.push({color:'orange',left:(planOff+1)*DAY,width:(tE-planOff)*DAY});
+  }
+
+  return applyGrey(segs);
+}
+
+/* ══ IMPACT ANALYSIS ════════════════════════════════════
+   For a task that is extended or delayed, find all tasks whose
+   startDate > task's original end date (from baseline or original).
+   User can select which to postpone.
+══════════════════════════════════════════════════════════ */
+function findImpactedTasks(changedTask,allScheduled,baselineTasks){
+  const orig=(baselineTasks||[]).find(o=>o.id===changedTask.id);
+  if(!orig)return [];
+  const origEnd=orig.end;
+  // Tasks starting AFTER the original end of the changed task
+  return allScheduled.filter(t=>t.id!==changedTask.id&&t.start>origEnd);
+}
+
+/* ══ IMPACT MODAL ═══════════════════════════════════════
+   Postpone logic:
+   - changedTask has origEnd (from baseline) and newEnd (current task.end)
+   - shift = diffDays(origEnd, newEnd)  — how many days the task overran
+   - For each selected impacted task: newStart = addDays(task.start, shift)
+   - So if origEnd=Apr30, newEnd=May5 => shift=5
+     Task starting May3 => new start May3+5 = May8  ✓
+══════════════════════════════════════════════════════════ */
+function ImpactModal({changedTask,origEnd,impacted,onPostpone,onIgnore,onClose}){
+  const[selected,setSelected]=useState([]);
+  const toggle=id=>setSelected(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id]);
+  // How many days the changed task overran vs original end
+  const shift=diffDays(origEnd,changedTask.end);
+
+  return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="modal">
+      <div className="modal-title">⚡ Bağımlı Görev Analizi</div>
+
+      {/* Info banner */}
+      <div style={{background:'var(--yellow-l)',border:'1px solid rgba(146,64,14,.25)',borderRadius:'var(--r)',padding:'12px 14px',marginBottom:14}}>
+        <div style={{fontWeight:700,fontSize:'.88rem',color:'var(--yellow)',marginBottom:4,wordBreak:'break-all',overflowWrap:'break-word'}}>"{changedTask.name}" görevi uzadı</div>
+        <div style={{fontSize:'.8rem',color:'var(--text2)',lineHeight:1.6}}>
+          Bu görevin orijinal bitişi <strong>{fmt(origEnd)}</strong> iken güncel bitiş <strong>{fmt(changedTask.end)}</strong> oldu (<strong>+{shift} gün</strong> uzama).<br/>
+          Orijinal bitiş tarihinden sonra başlayan görevlerin etkilenme ihtimali var. Başlangıcını ötelemek istediğiniz görevleri işaretleyin.
+        </div>
+      </div>
+
+      {impacted.length===0
+        ?<div className="no-hint">Orijinal bitiş tarihinden sonra başlayan başka görev yok.</div>
+        :<div className="impact-list">
+          {impacted.map(t=>{
+            const newStart=addDays(t.start,shift);
+            const isSelected=selected.includes(t.id);
+            return(
+              <div key={t.id} className={`impact-item${isSelected?' selected':''}`} onClick={()=>toggle(t.id)}>
+                <div className="impact-item-check">{isSelected&&'✓'}</div>
+                <div className="impact-item-info">
+                  <div className="impact-item-name" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'340px'}} title={t.name}>{t.name}</div>
+                  <div className="impact-item-meta">
+                    {t.teamName&&<span style={{color:'var(--accent)',marginRight:6,fontWeight:600}}>[{t.teamName.length>20?t.teamName.slice(0,20)+'…':t.teamName}]</span>}
+                    Mevcut başlangıç: <strong>{fmt(t.start)}</strong>
+                  </div>
+                  {isSelected&&<div style={{fontSize:'.72rem',marginTop:4,color:'var(--green)',fontFamily:'var(--fm)',fontWeight:600}}>
+                    → Yeni başlangıç: {fmt(newStart)} (+{shift}g ötelenir)
+                  </div>}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      }
+
+      {/* Select all shortcut */}
+      {impacted.length>1&&<div style={{display:'flex',gap:8,marginTop:8,marginBottom:4}}>
+        <button className="btn btn-g btn-sm" onClick={()=>setSelected(impacted.map(t=>t.id))}>Tümünü Seç</button>
+        <button className="btn btn-g btn-sm" onClick={()=>setSelected([])}>Seçimi Temizle</button>
+      </div>}
+
+      <div className="form-foot">
+        <button className="btn btn-g" onClick={onIgnore} title="Bu görevi bir daha gösterme">Yoksay</button>
+        <button className="btn btn-p" onClick={()=>onPostpone(selected)} disabled={selected.length===0}>
+          {selected.length>0?`${selected.length} Görevi Ötele (+${shift}g)`:'Ötele'}
+        </button>
+      </div>
+    </div>
+  </div>);
+}
+
+/* ══ GANTT CHART ════════════════════════════════════════ */
+function GanttChart({scheduled,baselineTasks,baselineEnd,completedAt,teamFilter,ganttRef,onBarClick,impactMap,onImpactClick}){
+  const cref=useRef(null);
+  const[cw,setCw]=useState(700);
+  useEffect(()=>{if(!cref.current)return;const ro=new ResizeObserver(e=>setCw(e[0].contentRect.width));ro.observe(cref.current);return()=>ro.disconnect();},[]);
+
+  const today=todayStr();
+  const filtered=teamFilter==='all'?scheduled:scheduled.filter(t=>(t.teamName||'')===teamFilter);
+  if(!filtered.length)return<div ref={el=>{cref.current=el;if(ganttRef)ganttRef.current=el;}} style={{padding:40,textAlign:'center',color:'var(--text3)'}}><div style={{fontSize:'1.8rem',marginBottom:8}}>📅</div><div style={{fontFamily:'var(--fd)',fontWeight:600,color:'var(--text2)'}}>Görev yok</div></div>;
+  const ps=pStart(filtered),pe=pEnd(filtered);
+  const bPe=baselineTasks?pEnd(baselineTasks.filter(t=>filtered.some(f=>f.id===t.id))):null;
+  const totalDays=Math.max(14,diffDays(ps,bPe&&bPe>pe?bPe:pe)+5);
+  const labelW=190,avail=cw-labelW-20;
+  const DAY=Math.max(12,Math.min(36,Math.floor(avail/totalDays)));
+  const totalW=totalDays*DAY;
+  const days=Array.from({length:totalDays},(_,i)=>addDays(ps,i));
+  const months=[];
+  days.forEach(d=>{const dt=new Date(d),key=`${dt.getFullYear()}-${dt.getMonth()}`;if(!months.length||months[months.length-1].key!==key)months.push({key,label:dt.toLocaleString('tr-TR',{month:'long',year:'numeric'}),count:0});months[months.length-1].count++;});
+  const todOff=diffDays(ps,today);
+  const showToday=!completedAt&&todOff>=0&&todOff<totalDays;
+
+  return(<div ref={el=>{cref.current=el;if(ganttRef)ganttRef.current=el;}} style={{overflowX:'auto'}}>
+    <table className="gtable" style={{width:labelW+totalW}}>
+      <colgroup><col style={{width:labelW}}/><col style={{width:totalW}}/></colgroup>
+      <thead>
+        <tr className="mrow"><th className="lh">Görev</th><th style={{padding:0}}><div style={{display:'flex',width:totalW}}>{months.map(m=><div key={m.key} style={{width:m.count*DAY,borderLeft:'1px solid var(--border)',textAlign:'center',padding:'4px 2px',fontSize:'.65rem',fontFamily:'var(--fm)',color:'var(--text2)',fontWeight:700,flexShrink:0,overflow:'hidden',whiteSpace:'nowrap'}}>{m.label}</div>)}</div></th></tr>
+        <tr className="drow"><th className="lh">Tarih/Süre</th><th style={{padding:0}}><div style={{display:'flex',width:totalW}}>{days.map(d=>{const isT=!completedAt&&d===today;return<div key={d} style={{width:DAY,flexShrink:0,textAlign:'center',fontSize:'.58rem',fontFamily:'var(--fm)',padding:'3px 0',borderLeft:'1px solid var(--border)',color:isT?'var(--accent)':'var(--text3)',fontWeight:isT?700:400,background:isT?'var(--accent-l)':'transparent'}}>{new Date(d).getDate()}</div>;})}
+        </div></th></tr>
+      </thead>
+      <tbody>
+        {filtered.map(task=>{
+          const orig=(baselineTasks||[]).find(o=>o.id===task.id);
+          const isNew=!!baselineEnd&&!orig;
+          const segs=buildSegs(task,ps,today,orig||null,isNew,baselineEnd,DAY,completedAt);
+          const hasRed=segs.some(s=>s.color==='red');
+          const hasOrange=segs.some(s=>s.color==='orange');
+          const tip=`${task.name}${task.teamName?' ['+task.teamName+']':''} · ${fmt(task.start)}–${fmt(task.end)} (${task.durationDays}g)${hasRed?' ⚠ Gecikme':hasOrange?' ~ Uzama':''}`;
+          const hasImpact=!!(impactMap&&impactMap[task.id]&&impactMap[task.id].length>0);
+          return(<tr key={task.id} className="grow">
+            <td className="glabel" title={tip}>
+              <div className="glabel-inner">
+                <div style={{flex:1,minWidth:0}}>
+                  <div className="gn">{task.name}</div>
+                  <div className="gm">{task.teamName&&<span style={{color:'var(--accent)',marginRight:3}}>[{task.teamName.length>12?task.teamName.slice(0,12)+'…':task.teamName}]</span>}{task.durationDays}g{hasRed&&<span style={{marginLeft:4,color:'var(--red)',fontWeight:700}}>⚠</span>}{!hasRed&&hasOrange&&<span style={{marginLeft:4,color:'var(--orange)',fontWeight:700}}>~</span>}</div>
+                </div>
+                {hasImpact&&<button className="impact-btn" onClick={e=>{e.stopPropagation();onImpactClick&&onImpactClick(task);}} title="Bu görev uzadı/gecikmedi — etkilenebilecek görevler var">⚡</button>}
+              </div>
+            </td>
+            <td className="gbar-td">
+              <div style={{position:'relative',width:totalW,height:32}}>
+                {days.map((d,i)=><div key={d} style={{position:'absolute',left:i*DAY,top:0,bottom:0,width:1,background:'rgba(227,225,216,.9)',pointerEvents:'none'}}/>)}
+                {showToday&&<div style={{position:'absolute',left:todOff*DAY+DAY/2-1,top:0,bottom:0,width:2,background:'var(--accent)',zIndex:5,boxShadow:'0 0 5px rgba(35,85,212,.4)',borderRadius:2,pointerEvents:'none'}}/>}
+                {segs.map((seg,si)=><div key={si} className="g-bar-seg" title={seg.color==='green'?'Tamamlanan':seg.color==='blue'?'Planlanan':seg.color==='orange'?'Uzama':seg.color==='gray'?'Proje tamamlandı':'Gecikme'} onClick={()=>onBarClick&&onBarClick(task)} style={{position:'absolute',left:seg.left,width:Math.max(DAY,seg.width),top:5,height:22,background:BAR[seg.color],borderRadius:si===0&&si===segs.length-1?5:si===0?'5px 0 0 5px':si===segs.length-1?'0 5px 5px 0':0,boxShadow:'0 1px 5px rgba(0,0,0,.1)',zIndex:2}}/>)}
+              </div>
+            </td>
+          </tr>);
+        })}
+      </tbody>
+    </table>
+  </div>);
+}
+
+/* ══ CONFIRM MODAL ══════════════════════════════════════ */
+function ConfirmModal({title,message,onConfirm,onCancel}){
+  return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onCancel()}><div className="modal modal-sm"><div className="modal-title">{title}</div><p style={{fontSize:'.85rem',color:'var(--text2)',lineHeight:1.55}}>{message}</p><div style={{display:'flex',gap:8,justifyContent:'flex-end',marginTop:20}}><button className="btn btn-g" onClick={onCancel}>Vazgeç</button><button className="btn btn-rd" onClick={onConfirm}>Evet, Sil</button></div></div></div>);
+}
+
+function CompleteProjectModal({proj,onSave,onClose}){
+  const sc=useMemo(()=>computeSched(proj.tasks),[proj.tasks]);
+  const pe=pEnd(sc);
+  const baselineEnd=proj.baselineEnd;
+  // Reference = baseline if set, otherwise planned end
+  const reference=baselineEnd||pe;
+  const[date,setDate]=useState(todayStr());
+  const isEarly=reference&&date<reference;
+  const isLate=reference&&date>reference;
+  return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onClose()}><div className="modal modal-sm">
+    <div className="modal-title">🏁 Projeyi Sonlandır</div>
+    <div className="fr"><div><label className="lbl">Gerçek Bitiş Tarihi</label><input className="inp" type="date" value={date} onChange={e=>setDate(e.target.value)}/></div></div>
+    {reference&&<div style={{background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:'var(--r)',padding:'9px 12px',marginBottom:10,fontSize:'.8rem',fontFamily:'var(--fm)',display:'flex',flexDirection:'column',gap:5}}>
+      <div>{baselineEnd?'Baseline bitiş':'Planlanan bitiş'}: <strong>{fmt(reference)}</strong></div>
+      {isEarly&&<div style={{color:'var(--green)',fontWeight:600}}>✅ {diffDays(date,reference)} gün erken</div>}
+      {isLate&&<div style={{color:'var(--red)',fontWeight:600}}>⚠ {diffDays(reference,date)} gün gecikmeli</div>}
+      {!isEarly&&!isLate&&<div style={{color:'var(--text2)'}}>Tam zamanında</div>}
+    </div>}
+    <div className="form-foot"><button className="btn btn-g" onClick={onClose}>İptal</button><button className="btn btn-p" onClick={()=>onSave(date)}>Sonlandır</button></div>
+  </div></div>);
+}
+
+/* ══ TASKS FULL MODAL (view + optional edit) ════════════ */
+function TasksFullModal({scheduled,baselineTasks,baselineEnd,readOnly,onEdit,onDelete,onClose}){
+  return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onClose()}>
+    <div className="modal modal-lg">
+      <div style={{display:'flex',alignItems:'center',marginBottom:18,gap:10}}>
+        <span className="modal-title" style={{marginBottom:0,flex:1}}>
+          Tüm Görevler ({scheduled.length})
+          {readOnly&&<span className="badge b-tl" style={{marginLeft:8}}>🔒 Salt Okunur</span>}
+        </span>
+        <button className="btn btn-g btn-sm" onClick={onClose}>Kapat</button>
+      </div>
+      {scheduled.length===0?<div className="no-hint">Görev yok</div>:
+        <div style={{display:'flex',flexDirection:'column',gap:7,maxHeight:'60vh',overflowY:'auto',paddingRight:4}}>
+          {scheduled.map((t,i)=>{
+            const orig=(baselineTasks||[]).find(o=>o.id===t.id);
+            const delayed=baselineEnd&&t.end>baselineEnd;
+            const extended=orig&&t.durationDays>orig.durationDays;
+            const isNew=baselineEnd&&!orig;
+            let cls='';
+            if(delayed)cls=' delayed';else if(extended)cls=' extended';else if(isNew)cls=' new-after-bl';
+            return(<div key={t.id} className={`titem${cls}`} style={{flexDirection:'row',alignItems:'flex-start',gap:10,display:'flex'}}>
+              <span style={{fontFamily:'var(--fm)',fontSize:'.72rem',color:'var(--text3)',width:22,flexShrink:0,paddingTop:2,textAlign:'right'}}>{i+1}</span>
+              <div style={{flex:1,minWidth:0}}>
+                <div style={{fontWeight:700,fontSize:'.88rem',wordBreak:'break-word'}}>{t.name}</div>
+                <div style={{fontSize:'.75rem',color:'var(--text2)',fontFamily:'var(--fm)',marginTop:3}}>
+                  {t.teamName&&<span style={{color:'var(--accent)',marginRight:6}}>[{t.teamName}]</span>}
+                  {t.durationDays}g · {fmt(t.start)} → {fmt(t.end)}
+                </div>
+                <div style={{display:'flex',gap:5,flexWrap:'wrap',marginTop:4}}>
+                  {delayed&&<span className="badge b-rd">⚠ Gecikme{extended?' & Uzama':''}</span>}
+                  {!delayed&&extended&&<span className="badge b-or">~ Uzama</span>}
+                  {isNew&&!delayed&&<span className="badge b-bl">+ Baseline sonrası</span>}
+                </div>
+              </div>
+              {!readOnly&&<div style={{display:'flex',gap:4,flexShrink:0}}>
+                <button className="ibtn b" onClick={()=>{onEdit(t);}} title="Düzenle">✏️</button>
+                <button className="ibtn r" onClick={()=>onDelete(t.id)} title="Sil">🗑</button>
+              </div>}
+            </div>);
+          })}
+        </div>
+      }
+    </div>
+  </div>);
+}
+
+/* ══ TASK MODAL ═════════════════════════════════════════ */
+function TaskModal({initial,tasks,projectTeams,onSave,onClose,projStartDate,baselineEnd}){
+  const[f,setF]=useState(initial?{name:initial.name,teamName:initial.teamName||'',startDate:initial.startDate,durationMode:initial.durationMode||'days',durationInput:initial.durationInput||initial.durationDays||1,sprintWeeks:initial.sprintWeeks||2}:{name:'',teamName:'',startDate:todayStr(),durationMode:'days',durationInput:1,sprintWeeks:2});
+  const set=(k,v)=>setF(p=>({...p,[k]:v}));
+  const[errors,setErrors]=useState({});
+  const maxSp=maxSprints(f.sprintWeeks);
+  const durationDays=toDays(f.durationInput,f.durationMode,f.sprintWeeks);
+  const endDate=f.startDate&&durationDays>=1?addDays(f.startDate,durationDays-1):null;
+  const submit=()=>{
+    const errs={};
+    if(!f.name.trim())errs.name='Görev adı zorunlu';
+    if(!f.teamName)errs.teamName='Ekip seçimi zorunlu';
+    if(!f.startDate)errs.startDate='Tarih zorunlu';
+    if(projStartDate&&f.startDate<projStartDate)errs.startDate=`Proje başlangıcından (${fmt(projStartDate)}) önce olamaz`;
+    if(Object.keys(errs).length){setErrors(errs);return;}
+    onSave({...f,durationDays,durationInput:f.durationMode==='sprints'?clampSprints(f.durationInput,f.sprintWeeks):clampDays(f.durationInput)});
+  };
+  const handleDurChange=v=>set('durationInput',v===''?'':parseInt(v)||'');
+  const handleDurBlur=()=>{if(f.durationMode==='sprints')set('durationInput',clampSprints(f.durationInput||1,f.sprintWeeks));else set('durationInput',clampDays(f.durationInput||1));};
+  return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onClose()}><div className="modal">
+    <div className="modal-title">{initial?'Görevi Düzenle':'Yeni Görev Ekle'}</div>
+    <div className="fr"><div><label className="lbl">Görev Adı *</label><input className="inp" placeholder="Örn: UI Tasarımı" value={f.name} onChange={e=>{set('name',e.target.value);setErrors(p=>({...p,name:null}));}} autoFocus/>{errors.name&&<div style={{fontSize:'.72rem',color:'var(--red)',marginTop:3}}>{errors.name}</div>}</div></div>
+    <div className="fr"><div><label className="lbl">Ekip *</label><select className="sel" value={f.teamName} onChange={e=>{set('teamName',e.target.value);setErrors(p=>({...p,teamName:null}));}}><option value="">— Ekip Seç —</option>{projectTeams.map(t=><option key={t.id} value={t.name} title={t.name}>{t.name.length>36?t.name.slice(0,36)+'…':t.name}</option>)}</select>{errors.teamName&&<div style={{fontSize:'.72rem',color:'var(--red)',marginTop:3}}>{errors.teamName}</div>}</div></div>
+    <div className="fr"><div><label className="lbl">Başlangıç Tarihi *{projStartDate&&` (min: ${fmt(projStartDate)})`}</label><input className="inp" type="date" value={f.startDate} min={projStartDate||''} onChange={e=>{set('startDate',e.target.value);setErrors(p=>({...p,startDate:null}));}}/>{errors.startDate&&<div style={{fontSize:'.72rem',color:'var(--red)',marginTop:3}}>{errors.startDate}</div>}</div></div>
+    <div className="fr"><div><label className="lbl">Süre Türü</label><div className="seg-ctrl"><button type="button" className={`seg-btn${f.durationMode==='days'?' on':''}`} onClick={()=>{set('durationMode','days');set('durationInput',1);}}>📅 Gün</button><button type="button" className={`seg-btn${f.durationMode==='sprints'?' on':''}`} onClick={()=>{set('durationMode','sprints');set('durationInput',1);}}>🔄 Sprint</button></div></div></div>
+    <div className={`fr${f.durationMode==='sprints'?' fr2':''}`}>
+      <div><label className="lbl">{f.durationMode==='sprints'?`Sprint (1–${maxSp})`:`Süre (1–${MAX_DAYS}g)`}</label><input className="inp" type="number" min="1" max={f.durationMode==='sprints'?maxSp:MAX_DAYS} value={f.durationInput} onChange={e=>handleDurChange(e.target.value)} onBlur={handleDurBlur}/></div>
+      {f.durationMode==='sprints'&&<div><label className="lbl">Sprint Uzunluğu</label><select className="sel" value={f.sprintWeeks} onChange={e=>{const sw=parseInt(e.target.value);set('sprintWeeks',sw);set('durationInput',1);}}><option value={1}>1 hafta</option><option value={2}>2 hafta</option><option value={3}>3 hafta</option><option value={4}>4 hafta</option></select></div>}
+    </div>
+    {endDate&&<div style={{background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:'var(--r)',padding:'9px 12px',marginBottom:10,fontSize:'.8rem',color:'var(--text2)',fontFamily:'var(--fm)',display:'flex',gap:14,flexWrap:'wrap'}}><span>📅 Bitiş: <strong style={{color:'var(--text)'}}>{fmt(endDate)}</strong></span><span>{durationDays}g</span></div>}
+    <div className="form-foot"><button className="btn btn-g" onClick={onClose}>İptal</button><button className="btn btn-p" onClick={submit}>{initial?'Güncelle':'Ekle'}</button></div>
+  </div></div>);
+}
+
+/* ══ TIMELINE TAB ═══════════════════════════════════════ */
+function TimelineTab({proj,updateProj}){
+  const{tasks,baselineEnd,baselineTasks,projectTeams=[],completedAt}=proj;
+  const[showModal,setShowModal]=useState(false);
+  const[editTask,setEditTask]=useState(null);
+  const[showAll,setShowAll]=useState(false);
+  const[tFilt,setTFilt]=useState('all');
+  const[sumOpen,setSumOpen]=useState(true);
+  const[teamsOpen,setTeamsOpen]=useState(true);
+  const[tasksOpen,setTasksOpen]=useState(true);
+  const[newTeamName,setNewTeamName]=useState('');
+  const[newMember,setNewMember]=useState({});
+  const[confirmDelTeam,setConfirmDelTeam]=useState(null);
+  const[showComplete,setShowComplete]=useState(false);
+  const[exporting,setExporting]=useState(false);
+  // ignoredImpacts is stored per-project in proj data for persistence across shares/tabs
+  // Key: taskId, Value: origEnd string at time of ignore (so re-trigger if task changes again)
+  const ignoredImpacts=proj.ignoredImpacts||{};
+  const setIgnoredImpact=(taskId,origEnd)=>updateProj(p=>({...p,ignoredImpacts:{...(p.ignoredImpacts||{}),[taskId]:origEnd}}));
+  const clearIgnoredImpact=(taskId)=>updateProj(p=>{const ig={...(p.ignoredImpacts||{})};delete ig[taskId];return{...p,ignoredImpacts:ig};});
+  const ganttRef=useRef(null);
+
+  const scheduled=useMemo(()=>computeSched(tasks),[tasks]);
+  const pe=pEnd(scheduled),ps=pStart(scheduled);
+  const delay=pe&&baselineEnd?Math.max(0,diffDays(baselineEnd,pe)):0;
+
+  // Build impact map: for each delayed/extended task, find impacted tasks
+  // ignoredImpacts stores {taskId: "lastIgnoredTaskEnd"} - re-triggers when task.end increases further
+  const impactMap=useMemo(()=>{
+    if(!baselineEnd)return {};
+    const map={};
+    scheduled.forEach(task=>{
+      const{delayed,extended}=getTS(task,baselineEnd,baselineTasks);
+      if(delayed||extended){
+        const orig=(baselineTasks||[]).find(o=>o.id===task.id);
+        if(!orig)return;
+        // Re-trigger: if task.end is now GREATER than when user last ignored/postponed it
+        const lastIgnoredTaskEnd=ignoredImpacts[task.id]; // stores task.end at ignore time
+        if(lastIgnoredTaskEnd&&task.end<=lastIgnoredTaskEnd)return; // not grown further → still ignored
+        const impacted=findImpactedTasks(task,scheduled,baselineTasks);
+        if(impacted.length>0)map[task.id]=impacted;
+      }
+    });
+    return map;
+  },[scheduled,baselineEnd,baselineTasks,ignoredImpacts]);
+
+  // Per-team summary — professional table data
+  const teamSummary=useMemo(()=>projectTeams.map(team=>{
+    const tt=scheduled.filter(t=>t.teamName===team.name);
+    const blTasks=(baselineTasks||[]).filter(t=>tt.some(s=>s.id===t.id));
+    const blDays=blTasks.reduce((s,t)=>s+t.durationDays,0);
+    const currDays=tt.reduce((s,t)=>s+t.durationDays,0);
+    const delayedTasks=tt.filter(t=>baselineEnd&&t.end>baselineEnd);
+    const extendedTasks=tt.filter(t=>{const o=(baselineTasks||[]).find(o=>o.id===t.id);return o&&t.durationDays>o.durationDays;});
+    const delayDays=baselineEnd&&pe?Math.max(0,diffDays(baselineEnd,pe)):0;
+    const extDays=extendedTasks.reduce((s,t)=>{const o=(baselineTasks||[]).find(o=>o.id===t.id);return s+(o?t.durationDays-o.durationDays:0);},0);
+    return{name:team.name,taskCount:tt.length,blDays,currDays,delayedCount:delayedTasks.length,extendedCount:extendedTasks.length,extDays};
+  }),[projectTeams,scheduled,baselineEnd,baselineTasks,pe]);
+
+  const completionInfo=useMemo(()=>{
+    if(!completedAt)return null;
+    // Compare against baseline if set, otherwise against planned end (pe)
+    const reference=baselineEnd||pe;
+    if(!reference)return null;
+    const d=diffDays(reference,completedAt);
+    return d<0?{type:'early',days:Math.abs(d)}:d>0?{type:'late',days:d}:{type:'ontime'};
+  },[completedAt,baselineEnd,pe]);
+
+  // Team management
+  const addTeam=()=>{
+    const n=newTeamName.trim().slice(0,MAX_NAME);
+    if(!n||projectTeams.some(t=>t.name===n))return;
+    const nt={id:uid(),name:n,members:[]};
+    updateProj(p=>({...p,projectTeams:[...(p.projectTeams||[]),nt],teams:[...p.teams,{id:nt.id,name:n}]}));
+    setNewTeamName('');
+  };
+  const deleteTeam=teamId=>{
+    const team=projectTeams.find(t=>t.id===teamId);
+    if(!team)return;
+    updateProj(p=>({...p,projectTeams:(p.projectTeams||[]).filter(t=>t.id!==teamId),tasks:p.tasks.filter(t=>t.teamName!==team.name),teams:p.teams.filter(t=>t.id!==teamId),items:p.items.filter(i=>i.teamId!==teamId)}));
+    setConfirmDelTeam(null);
+  };
+  const addMember=(teamId)=>{const name=(newMember[teamId]||'').trim();if(!name)return;updateProj(p=>({...p,projectTeams:(p.projectTeams||[]).map(t=>t.id===teamId?{...t,members:[...(t.members||[]),{id:uid(),name}]}:t)}));setNewMember(p=>({...p,[teamId]:''}));};
+  const deleteMember=(teamId,memberId)=>updateProj(p=>({...p,projectTeams:(p.projectTeams||[]).map(t=>t.id===teamId?{...t,members:(t.members||[]).filter(m=>m.id!==memberId)}:t)}));
+
+  // Task management
+  const addTask=form=>{updateProj(p=>({...p,tasks:[...p.tasks,{...form,id:uid()}]}));setShowModal(false);};
+  const editSave=form=>{
+    updateProj(p=>({...p,tasks:p.tasks.map(t=>t.id===editTask.id?{...form,id:t.id}:t)}));
+    setEditTask(null);
+  };
+  const delTask=id=>updateProj(p=>({...p,tasks:p.tasks.filter(t=>t.id!==id)}));
+  const setBaseline=()=>updateProj(p=>({...p,baselineEnd:pe,baselineTasks:JSON.parse(JSON.stringify(computeSched(p.tasks)))}));
+  const resetBL=()=>updateProj(p=>({...p,baselineEnd:null,baselineTasks:null}));
+  const doComplete=date=>{updateProj(p=>({...p,completedAt:date}));setShowComplete(false);};
+
+  const[impactTask,setImpactTask]=useState(null);
+
+  // Impact: postpone selected tasks
+  const handlePostpone=(taskIds)=>{
+    if(!impactTask||!baselineTasks)return;
+    const orig=(baselineTasks||[]).find(o=>o.id===impactTask.id);
+    if(!orig)return;
+    const origEnd=orig.end;
+    const shift=diffDays(origEnd,impactTask.end);
+    updateProj(p=>({
+      ...p,
+      tasks:p.tasks.map(t=>{
+        if(!taskIds.includes(t.id))return t;
+        return{...t,startDate:addDays(t.startDate,shift)};
+      }),
+      // Store task.end (current) as ignore key → re-triggers if task grows even further
+      ignoredImpacts:{...(p.ignoredImpacts||{}),[impactTask.id]:impactTask.end},
+    }));
+    setImpactTask(null);
+  };
+  const handleIgnore=()=>{
+    if(!impactTask)return;
+    // Store current task.end → re-triggers if task grows beyond this
+    setIgnoredImpact(impactTask.id,impactTask.end);
+    setImpactTask(null);
+  };
+
+  const doExport=()=>{
+    const data=scheduled.map(t=>{const o=(baselineTasks||[]).find(o=>o.id===t.id);const oe=o?o.end:t.end;return{'Görev':t.name,'Ekip':t.teamName||'','Süre (g)':t.durationDays,'Başlangıç':t.start,'Bitiş':t.end,'Baseline Bitiş':o?oe:'—','Gecikme (g)':o?Math.max(0,diffDays(oe,t.end)):0,'Uzama (g)':o&&t.durationDays>o.durationDays?t.durationDays-o.durationDays:0};});
+    const ws=XLSX.utils.json_to_sheet(data);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Gantt');XLSX.writeFile(wb,`${proj.name}_gantt.xlsx`);
+  };
+
+  const doImportGantt=(e)=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const wb=XLSX.read(ev.target.result,{type:'binary'});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        const rows=XLSX.utils.sheet_to_json(ws);
+        const newTasks=rows.filter(r=>r['Görev']&&r['Başlangıç']).map(r=>({
+          id:uid(),
+          name:String(r['Görev']),
+          teamName:String(r['Ekip']||''),
+          startDate:String(r['Başlangıç']).slice(0,10),
+          durationDays:Math.max(1,parseInt(r['Süre (g)'])||1),
+          durationInput:Math.max(1,parseInt(r['Süre (g)'])||1),
+          durationMode:'days',
+          sprintWeeks:2,
+        }));
+        if(newTasks.length===0){alert('Geçerli görev bulunamadı. "Görev" ve "Başlangıç" sütunlarının dolu olduğundan emin olun.');return;}
+        // Also auto-create teams from imported data
+        const teamNames=[...new Set(newTasks.map(t=>t.teamName).filter(Boolean))];
+        updateProj(p=>{
+          const existingTeamNames=(p.projectTeams||[]).map(t=>t.name);
+          const newTeams=teamNames.filter(n=>!existingTeamNames.includes(n)).map(n=>({id:uid(),name:n,members:[]}));
+          const newTrackerTeams=newTeams.map(t=>({id:t.id,name:t.name}));
+          return{
+            ...p,
+            tasks:[...p.tasks,...newTasks],
+            projectTeams:[...(p.projectTeams||[]),...newTeams],
+            teams:[...p.teams,...newTrackerTeams],
+          };
+        });
+        alert(`${newTasks.length} görev başarıyla içe aktarıldı.`);
+      }catch(err){alert('Import hatası: '+err.message);}
+    };
+    reader.readAsBinaryString(file);
+    e.target.value='';
+  };
+  const doPng=async()=>{
+    if(!ganttRef.current)return;setExporting(true);
+    try{const el=ganttRef.current,orig=el.scrollLeft;el.scrollLeft=0;const canvas=await html2canvas(el,{backgroundColor:'#ffffff',scale:2,useCORS:true,scrollX:0,scrollY:0,width:el.scrollWidth,windowWidth:el.scrollWidth+200});el.scrollLeft=orig;const link=document.createElement('a');link.download=`${proj.name}_gantt.png`;link.href=canvas.toDataURL('image/png');link.click();}
+    catch(e){alert('PNG export hatası: '+e.message);}
+    setExporting(false);
+  };
+
+  const canAdd=projectTeams.length>0&&!completedAt;
+
+  return(<div>
+    {/* Summary */}
+    <div className="acc" style={{marginBottom:14}}>
+      <div className="acc-hdr" onClick={()=>setSumOpen(o=>!o)}>
+        <span className={`acc-arr${sumOpen?' open':''}`}>▶</span>
+        <span style={{fontWeight:600,fontSize:'.88rem',flex:1}}>Proje Özeti</span>
+        {completedAt&&<span className="badge b-tl">🏁 Sonlandırıldı</span>}
+        {!completedAt&&delay>0&&<span className="badge b-rd">⚠ {delay}g gecikme</span>}
+        {!completedAt&&delay===0&&baselineEnd&&pe&&<span className="badge b-gr">✓ Zamanında</span>}
+        {!baselineEnd&&tasks.length>0&&<span className="badge b-gy">Baseline yok</span>}
+      </div>
+      {sumOpen&&<div className="acc-body">
+        <div className="sum-grid" style={{padding:'14px 16px'}}>
+          <div className="scard"><div className="scard-val" style={{color:'var(--accent)'}}>{tasks.length}</div><div className="scard-lbl">Toplam Görev</div></div>
+          <div className="scard"><div className="scard-val" style={{color:'var(--accent)',fontSize:'1.1rem'}}>{ps?fmt(ps):'—'}</div><div className="scard-lbl">Başlangıç</div></div>
+          <div className="scard"><div className="scard-val" style={{color:completedAt?'var(--teal)':delay>0?'var(--red)':'var(--text)',fontSize:'1.1rem'}}>{completedAt?fmt(completedAt):pe?fmt(pe):'—'}</div><div className="scard-lbl">{completedAt?'Gerçek Bitiş':'Güncel Bitiş'}</div>{baselineEnd&&<div className="scard-sub">Baseline: {fmt(baselineEnd)}</div>}</div>
+          <div className="scard">
+            {completedAt&&completionInfo?(<><div className="scard-val" style={{color:completionInfo.type==='early'?'var(--green)':completionInfo.type==='late'?'var(--red)':'var(--text2)'}}>{completionInfo.type==='early'?`-${completionInfo.days}g`:completionInfo.type==='late'?`+${completionInfo.days}g`:'—'}</div><div className="scard-lbl">{completionInfo.type==='early'?'Erken Bitti':completionInfo.type==='late'?'Gecikmeli':'Zamanında'}</div></>):(<><div className="scard-val" style={{color:delay>0?'var(--red)':'var(--text3)'}}>{delay>0?`+${delay}g`:'—'}</div><div className="scard-lbl">Gecikme</div>{!baselineEnd&&<div className="scard-sub">Baseline belirlenmedi</div>}</>)}
+          </div>
+        </div>
+
+        {/* Professional team summary table */}
+        {baselineEnd&&teamSummary.length>0&&<div style={{padding:'0 16px 16px'}}>
+          <div style={{fontSize:'.72rem',fontWeight:700,color:'var(--text2)',textTransform:'uppercase',letterSpacing:'.06em',marginBottom:10}}>Ekip Bazlı Analiz</div>
+          <table className="team-sum-table">
+            <thead>
+              <tr>
+                <th style={{width:'22%'}}>Ekip</th>
+                <th style={{width:'7%'}}>Görev</th>
+                <th style={{width:'14%'}}>Baseline Süre</th>
+                <th style={{width:'14%'}}>Güncel Süre</th>
+                <th style={{width:'12%'}}>Uzama</th>
+                <th style={{width:'14%'}}>Gecikme</th>
+                <th style={{width:'17%'}}>Durum</th>
+              </tr>
+            </thead>
+            <tbody>
+              {teamSummary.map(ts=>{
+                const diffD=ts.currDays-ts.blDays;
+                const hasDelay=ts.delayedCount>0;
+                const hasExt=ts.extDays>0;
+                const status=hasDelay?'delay':hasExt?'extend':'ok';
+                return(<tr key={ts.name}>
+                  <td><span className="ts-name" title={ts.name}>{ts.name}</span></td>
+                  <td><span className="ts-num">{ts.taskCount}</span></td>
+                  <td>
+                    <span className="ts-num">{ts.blDays>0?`${ts.blDays}g`:'—'}</span>
+                  </td>
+                  <td>
+                    {ts.blDays>0&&diffD!==0
+                      ?<><span className="ts-num" style={{color:diffD>0?'var(--orange)':'var(--green)',fontWeight:700}}>{ts.currDays}g</span><span className="ts-sub">{diffD>0?'+':'−'}{Math.abs(diffD)}g</span></>
+                      :<span className="ts-num" style={{color:'var(--text3)'}}>{ts.blDays>0?`${ts.currDays}g`:'—'}</span>
+                    }
+                  </td>
+                  <td>{hasExt?<span className="ts-badge ts-warn">+{ts.extDays}g</span>:<span style={{color:'var(--text3)',fontSize:'.72rem',fontFamily:'var(--fm)'}}>—</span>}</td>
+                  <td>{hasDelay?<span className="ts-badge ts-delay">{ts.delayedCount} görev</span>:<span style={{color:'var(--text3)',fontSize:'.72rem',fontFamily:'var(--fm)'}}>—</span>}</td>
+                  <td>{status==='delay'?<span className="ts-badge ts-delay">⚠ Gecikmeli</span>:status==='extend'?<span className="ts-badge ts-warn">~ Uzama var</span>:<span className="ts-badge ts-ok">✓ Normal</span>}</td>
+                </tr>);
+              })}
+            </tbody>
+          </table>
+        </div>}
+      </div>}
+    </div>
+
+    {/* Banners */}
+    {!completedAt&&delay>0&&<div className="banner bn-d"><span>⚠️</span><span>Proje <strong>{delay} gün</strong> gecikiyor. Baseline: <strong>{fmt(baselineEnd)}</strong> → Güncel: <strong>{fmt(pe)}</strong></span></div>}
+    {!completedAt&&delay===0&&baselineEnd&&tasks.length>0&&<div className="banner bn-ok"><span>✅</span><span>Proje zamanında ilerliyor. Bitiş: <strong>{fmt(pe)}</strong></span></div>}
+    {!baselineEnd&&tasks.length>0&&<div className="banner bn-i"><span>ℹ️</span><span>Görevleri girdikten sonra <strong>"Baseline Belirle"</strong> butonuna tıklayın.</span></div>}
+    {!canAdd&&!completedAt&&<div className="banner bn-w"><span>⚠️</span><span>Görev eklemek için önce <strong>en az bir ekip</strong> tanımlayın.</span></div>}
+    {completedAt&&completionInfo&&<div className={`banner ${completionInfo.type==='early'?'bn-ok':completionInfo.type==='late'?'bn-d':'bn-tl'}`}>
+      <span>{completionInfo.type==='early'?'🎉':completionInfo.type==='late'?'⚠️':'🏁'}</span>
+      <span>Proje <strong>{fmt(completedAt)}</strong> tarihinde sonlandırıldı. {completionInfo.type==='early'?`${completionInfo.days} gün erken.`:completionInfo.type==='late'?`${completionInfo.days} gün gecikmeli.`:'Zamanında.'}</span>
+      <button className="btn btn-g btn-sm" style={{marginLeft:'auto'}} onClick={()=>updateProj(p=>({...p,completedAt:null}))}>Geri Al</button>
+    </div>}
+
+    <div className="gl-layout">
+      <div>
+        {/* Teams collapsible */}
+        <div className="cpanel">
+          <div className={`cpanel-hdr${teamsOpen?' oh':''}`} onClick={()=>setTeamsOpen(o=>!o)}>
+            <span className={`carrow${teamsOpen?' open':''}`}>▶</span>
+            <span className="cpanel-title">Ekipler & Üyeler</span>
+            <span style={{fontSize:'.72rem',color:'var(--text3)',fontFamily:'var(--fm)'}}>{projectTeams.length}</span>
+          </div>
+          {teamsOpen&&<div style={{padding:'12px 14px'}}>
+            {projectTeams.length===0&&<div style={{fontSize:'.72rem',padding:'8px',background:'var(--accent-l)',borderRadius:'6px',color:'var(--accent)',marginBottom:8}}>En az bir ekip tanımlayın.</div>}
+            {projectTeams.map(team=>(
+              <div key={team.id} className="team-tag-item">
+                <div className="team-tag-header">
+                  <span className="team-tag-name" title={team.name}>{team.name}</span>
+                  {!completedAt&&<button className="team-tag-del" onClick={()=>setConfirmDelTeam(team.id)} title="Ekibi sil">×</button>}
+                </div>
+                {(team.members||[]).length>0&&<div className="team-members">{(team.members||[]).map(m=><span key={m.id} className="member-chip">👤 {m.name}{!completedAt&&<button className="member-del" onClick={()=>deleteMember(team.id,m.id)}>×</button>}</span>)}</div>}
+                {!completedAt&&<div className="member-add-row">
+                  <input className="inp" placeholder="Üye adı..." value={newMember[team.id]||''} onChange={e=>{const v=e.target.value.replace(/[^a-zA-ZçÇğĞıİöÖşŞüÜ\s]/g,'');setNewMember(p=>({...p,[team.id]:v}));}} onKeyDown={e=>e.key==='Enter'&&addMember(team.id)} style={{fontSize:'.78rem',padding:'5px 9px'}}/>
+                  <button className="btn btn-g btn-sm" onClick={()=>addMember(team.id)} style={{flexShrink:0}}>+ Üye</button>
+                </div>}
+              </div>
+            ))}
+            {!completedAt&&<div className="team-add-row">
+              <input className="inp" placeholder="Yeni ekip adı..." maxLength={MAX_NAME} value={newTeamName} onChange={e=>setNewTeamName(e.target.value.replace(/[^a-zA-Z0-9çÇğĞıİöÖşŞüÜ\s]/g,'').slice(0,MAX_NAME))} onKeyDown={e=>e.key==='Enter'&&addTeam()} style={{fontSize:'.82rem',padding:'6px 10px'}}/>
+              <button className="btn btn-p btn-sm" onClick={addTeam} style={{flexShrink:0}}>+ Ekle</button>
+            </div>}
+            {completedAt&&projectTeams.length===0&&<div style={{fontSize:'.72rem',color:'var(--text3)',padding:'6px 0'}}>Proje sonlandırıldı, ekip eklenemez.</div>}
+          </div>}
+        </div>
+
+        {/* Tasks collapsible */}
+        <div className="cpanel">
+          <div className={`cpanel-hdr${tasksOpen?' oh':''}`} onClick={()=>setTasksOpen(o=>!o)}>
+            <span className={`carrow${tasksOpen?' open':''}`}>▶</span>
+            <span className="cpanel-title">Görevler</span>
+            <span style={{fontSize:'.72rem',color:'var(--text3)',fontFamily:'var(--fm)'}}>{tasks.length}</span>
+          </div>
+          {tasksOpen&&<div style={{padding:'10px 14px'}}>
+            <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:8}}>
+              <span style={{fontSize:'.78rem',color:'var(--text3)',fontFamily:'var(--fm)',flex:1}}>Görevler ({tasks.length})</span>
+              <button className="btn btn-g btn-sm" onClick={()=>setShowAll(true)} title="Geniş görünüm" style={{display:tasks.length>0?'inline-flex':'none'}}>⛶</button>
+              <button className="btn btn-p btn-sm" onClick={()=>setShowModal(true)} disabled={!canAdd}>+ Ekle</button>
+            </div>
+            {tasks.length===0?<div className="no-hint">{canAdd?'Henüz görev yok':'Önce ekip ekle'}</div>:
+              <div className="task-list">{scheduled.map((t,i)=>{
+                const{delayed,extended,isNew}=getTS(t,baselineEnd,baselineTasks);
+                const origT=(baselineTasks||[]).find(o=>o.id===t.id);
+                let cls='';
+                if(delayed)cls=' delayed';else if(extended)cls=' extended';else if(isNew)cls=' new-after-bl';
+                return(<div key={t.id} className={`titem${cls}`}>
+                  <div className="titem-top">
+                    <span className="titem-num">{i+1}</span>
+                    <div className="titem-body">
+                      <div className="titem-name">{t.name}</div>
+                      {t.teamName&&<div className="titem-team" title={t.teamName}>{t.teamName}</div>}
+                      <div className="titem-meta">{t.durationDays}g · {fmt(t.start)} → {fmt(t.end)}</div>
+                      <div className="titem-flags">
+                        {delayed&&<span className="badge b-rd">⚠ Gecikme{extended?' & Uzama':''}</span>}
+                        {!delayed&&extended&&<span className="badge b-or">~ Uzama</span>}
+                        {isNew&&!delayed&&<span className="badge b-bl">+ Baseline sonrası</span>}
+                      </div>
+                      {origT&&origT.durationDays!==t.durationDays&&<div style={{fontSize:'.66rem',color:'var(--text2)',fontFamily:'var(--fm)',marginTop:2}}>Orijinal: {origT.durationDays}g</div>}
+                    </div>
+                    <div className="titem-actions">
+                      {!completedAt&&<button className="ibtn b" onClick={()=>setEditTask(t)}>✏️</button>}
+                      {!completedAt&&<button className="ibtn r" onClick={()=>delTask(t.id)}>🗑</button>}
+                    </div>
+                  </div>
+                </div>);
+              })}</div>
+            }
+            <div className="divider"/>
+            <div style={{display:'flex',gap:6,flexWrap:'wrap'}}>
+              {!baselineEnd?<button className="btn btn-p btn-sm" style={{flex:1}} onClick={setBaseline} disabled={!tasks.length}>📌 Baseline Belirle</button>:<><span style={{fontSize:'.72rem',color:'var(--text2)',fontFamily:'var(--fm)',alignSelf:'center',flex:1}}>Baseline: {fmt(baselineEnd)}</span>{!completedAt&&<button className="btn btn-g btn-sm" onClick={resetBL}>Sıfırla</button>}</>}
+              {!completedAt&&baselineEnd&&tasks.length>0&&<button className="btn btn-tl btn-sm" onClick={()=>setShowComplete(true)}>🏁 Sonlandır</button>}
+            </div>
+            <div style={{display:'flex',gap:6,marginTop:8}}>
+              {tasks.length>0&&<button className="btn btn-gr btn-sm" onClick={doExport}>📊 Excel</button>}
+              {tasks.length>0&&<button className="btn btn-sh btn-sm" onClick={doPng} disabled={exporting}>{exporting?'⏳':'🖼 PNG'}</button>}
+              {!completedAt&&<label className="btn btn-or btn-sm" style={{cursor:'pointer',margin:0}}>
+                📥 Import
+                <input type="file" accept=".xlsx,.xls" style={{display:'none'}} onChange={doImportGantt}/>
+              </label>}
+            </div>
+            <div className="divider"/>
+            <div className="g-legend">
+              <div className="g-legend-i"><div className="g-legend-d" style={{background:'#059669'}}/>Tamamlanan</div>
+              <div className="g-legend-i"><div className="g-legend-d" style={{background:'#1d4ed8'}}/>Planlanan</div>
+              <div className="g-legend-i"><div className="g-legend-d" style={{background:'#ea580c'}}/>Uzama</div>
+              <div className="g-legend-i"><div className="g-legend-d" style={{background:'#b91c1c'}}/>Gecikme</div>
+              <div className="g-legend-i"><div className="g-legend-d" style={{background:'#9ca3af'}}/>Tamamlanan sonrası</div>
+            </div>
+          </div>}
+        </div>
+      </div>
+
+      {/* Gantt */}
+      <div className="gantt-wrap">
+        <div className="gantt-top">
+          <span style={{fontFamily:'var(--fd)',fontWeight:700,fontSize:'.9rem'}}>Gantt — {proj.name}</span>
+          <div style={{display:'flex',gap:8,alignItems:'center',flexWrap:'wrap'}}>
+            {projectTeams.length>0&&<div style={{display:'flex',gap:5,alignItems:'center'}}>
+              <span style={{fontSize:'.72rem',color:'var(--text3)'}}>Ekip:</span>
+              <select className="sel" style={{width:'auto',padding:'3px 8px',fontSize:'.75rem',maxWidth:130}} value={tFilt} onChange={e=>setTFilt(e.target.value)}>
+                <option value="all">Tümü</option>
+                {projectTeams.map(t=><option key={t.id} value={t.name} title={t.name}>{t.name.length>14?t.name.slice(0,14)+'…':t.name}</option>)}
+              </select>
+            </div>}
+            {tasks.length>0&&<span className="badge b-bl">📍 {fmt(todayStr())}</span>}
+          </div>
+        </div>
+        <GanttChart scheduled={scheduled} baselineTasks={baselineTasks} baselineEnd={baselineEnd} completedAt={completedAt} teamFilter={tFilt} ganttRef={ganttRef} onBarClick={t=>!completedAt&&setEditTask(t)} impactMap={impactMap} onImpactClick={task=>setImpactTask(task)}/>
+      </div>
+    </div>
+
+    {showModal&&<TaskModal tasks={tasks} projectTeams={projectTeams} projStartDate={ps} baselineEnd={baselineEnd} onSave={addTask} onClose={()=>setShowModal(false)}/>}
+    {editTask&&<TaskModal initial={editTask} tasks={tasks} projectTeams={projectTeams} projStartDate={ps} baselineEnd={baselineEnd} onSave={editSave} onClose={()=>setEditTask(null)}/>}
+    {showAll&&<TasksFullModal scheduled={scheduled} baselineTasks={baselineTasks} baselineEnd={baselineEnd} readOnly={!!completedAt} onEdit={t=>{setEditTask(t);setShowAll(false);}} onDelete={id=>{delTask(id);}} onClose={()=>setShowAll(false)}/>}
+    {showComplete&&<CompleteProjectModal proj={proj} onSave={doComplete} onClose={()=>setShowComplete(false)}/>}
+    {confirmDelTeam&&<ConfirmModal title="Ekibi Sil" message={`"${projectTeams.find(t=>t.id===confirmDelTeam)?.name}" ekibini ve tüm görevlerini/iş öğelerini silmek istiyor musunuz?`} onConfirm={()=>deleteTeam(confirmDelTeam)} onCancel={()=>setConfirmDelTeam(null)}/>}
+    {impactTask&&(()=>{
+      const origT=(baselineTasks||[]).find(o=>o.id===impactTask.id);
+      return <ImpactModal changedTask={impactTask} origEnd={origT?.end||impactTask.end} impacted={impactMap[impactTask.id]||[]} onPostpone={ids=>handlePostpone(ids)} onIgnore={handleIgnore} onClose={()=>setImpactTask(null)}/>;
+    })()}
+  </div>);
+}
+
+/* ══ KANBAN ITEM ════════════════════════════════════════ */
+function KanbanItem({item,onUpdate,onDelete,onDragStart,onDragEnd,isDragging,typeFilter,personFilter}){
+  const[pressing,setP]=useState(false);
+  const idx=STATUSES.indexOf(item.status);
+  const isDone=item.status==='done',isTodo=item.status==='todo';
+  if(typeFilter!=='all'&&item.type!==typeFilter)return null;
+  if(personFilter==='none'&&item.assignee)return null;
+  if(personFilter&&personFilter!=='all'&&personFilter!=='none'&&item.assignee!==personFilter)return null;
+  const advance=e=>{e.stopPropagation();setP(false);if(isDone)return;onUpdate({...item,status:STATUSES[Math.min(idx+1,STATUSES.length-1)],updatedBy:window.__un||'Kullanıcı',updatedAt:new Date().toISOString()});};
+  const revert=e=>{e.stopPropagation();if(idx===0)return;onUpdate({...item,status:STATUSES[idx-1],updatedBy:window.__un||'Kullanıcı',updatedAt:new Date().toISOString()});};
+  let cbEx='';if(isDone)cbEx='cb-done';else if(pressing)cbEx='cb-press';else if(item.status==='inprogress')cbEx='cb-p1';else if(item.status==='review')cbEx='cb-p2';
+  return(<div className={`ki${isDragging?' dragging':''}`} draggable onDragStart={e=>{e.stopPropagation();onDragStart(item.id);}} onDragEnd={onDragEnd} title={item.updatedAt?`Son: ${item.updatedBy||'?'} — ${new Date(item.updatedAt).toLocaleString('tr-TR')}`:''}>
+    <div className="ki-top">
+      <div className="cb" onMouseDown={e=>{e.stopPropagation();if(!isDone)setP(true);}} onMouseUp={e=>{e.stopPropagation();advance(e);}} onMouseLeave={()=>setP(false)} onTouchStart={e=>{e.stopPropagation();if(!isDone)setP(true);}} onTouchEnd={e=>{e.stopPropagation();advance(e);}}>
+        <div className={`cb-box ${item.type==='bug'?'cb-bug':'cb-task'} ${cbEx}`}>{isDone&&'✓'}</div>
+      </div>
+      <div className="ki-title" style={{textDecoration:isDone?'line-through':'none',opacity:isDone?.55:1}}>{item.title}</div>
+      <span className={`tyb ${item.type==='bug'?'tyb-bug':'tyb-task'}`}>{item.type==='bug'?'🐞':'📋'}</span>
+    </div>
+    {(item.linkedTask||item.assignee)&&<div className="ki-tags">
+      {item.linkedTask&&<span className="badge b-gy" style={{maxWidth:130,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',cursor:'default'}} title={item.linkedTask}>📌 {item.linkedTask}</span>}
+      {item.assignee&&<span className="badge b-bl">👤 {item.assignee}</span>}
+    </div>}
+    <div className="ki-foot">
+      <div className="ki-meta">{item.updatedAt?`↗ ${new Date(item.updatedAt).toLocaleDateString('tr-TR')}`:''}</div>
+      <div className="ki-ctrl">
+        {isTodo&&<button className="edit-b" onClick={e=>{e.stopPropagation();onUpdate({...item,_edit:true});}} title="Düzenle">✏</button>}
+        {idx>0&&<button className="back-b" onClick={revert} title={`Geri → ${SL[STATUSES[idx-1]]}`}>↩</button>}
+        {isTodo&&<button className="del-b" style={{opacity:1}} onClick={e=>{e.stopPropagation();onDelete(item.id);}} title="Sil">×</button>}
+      </div>
+    </div>
+  </div>);
+}
+
+/* ══ ITEM MODAL ═════════════════════════════════════════ */
+function ItemModal({initial,teamId,projectTeams,projTasks,onSave,onClose}){
+  const team=(projectTeams||[]).find(t=>t.id===teamId);
+  const members=(team?.members)||[];
+  const teamTasks=(projTasks||[]).filter(t=>t.teamName===team?.name);
+  const[f,setF]=useState(initial?{title:initial.title,type:initial.type,linkedTask:initial.linkedTask||'',assignee:initial.assignee||''}:{title:'',type:'task',linkedTask:'',assignee:''});
+  const set=(k,v)=>setF(p=>({...p,[k]:v}));
+  const submit=()=>{if(!f.title.trim())return;onSave({...f});};
+  return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onClose()}><div className="modal modal-sm">
+    <div className="modal-title">{initial?'Öğeyi Düzenle':'Yeni İş Öğesi'}</div>
+    {!initial&&<div className="banner bn-i" style={{marginBottom:12,fontSize:'.78rem'}}>📌 To Do sütununa eklenir</div>}
+    <div className="fr"><div><label className="lbl">Başlık *</label><input className="inp" placeholder="Öğe başlığı..." value={f.title} onChange={e=>set('title',e.target.value)} onKeyDown={e=>{if(e.key==='Enter')submit();}} autoFocus/></div></div>
+    <div className="fr"><div><label className="lbl">Tür</label><div style={{display:'flex',gap:7}}>{['task','bug'].map(t=><label key={t} style={{display:'flex',alignItems:'center',gap:6,cursor:'pointer',padding:'7px 14px',borderRadius:'var(--r)',border:`1px solid ${f.type===t?'var(--accent)':'var(--border)'}`,background:f.type===t?'var(--accent-l)':'transparent',flex:1,justifyContent:'center',userSelect:'none',transition:'all .14s'}}><input type="radio" value={t} checked={f.type===t} onChange={()=>set('type',t)} style={{display:'none'}}/><span style={{fontSize:'.83rem'}}>{t==='task'?'📋 Task':'🐞 Bug'}</span></label>)}</div></div></div>
+    {teamTasks.length>0&&<div className="fr"><div><label className="lbl">İlgili Görev (opsiyonel)</label><select className="sel" value={f.linkedTask} onChange={e=>set('linkedTask',e.target.value)}><option value="">— Görev Seç —</option>{teamTasks.map(t=><option key={t.id} value={t.name} title={t.name}>{t.name.length>36?t.name.slice(0,36)+'…':t.name}</option>)}</select></div></div>}
+    {members.length>0&&<div className="fr"><div><label className="lbl">Sorumlu (opsiyonel)</label><select className="sel" value={f.assignee} onChange={e=>set('assignee',e.target.value)}><option value="">— Kişi Seç —</option>{members.map(m=><option key={m.id} value={m.name} title={m.name}>{m.name.length>36?m.name.slice(0,36)+'…':m.name}</option>)}</select></div></div>}
+    <div className="form-foot"><button className="btn btn-g" onClick={onClose}>İptal</button><button className="btn btn-p" onClick={submit}>{initial?'Güncelle':'Ekle'}</button></div>
+  </div></div>);
+}
+
+/* ══ TEAM SECTION (Tracker) ═════════════════════════════ */
+function TeamSection({team,items,onUpdateItem,onDeleteItem,onAddItem,onDeleteTeam,dragState,onDragStart,onDragEnd,onDrop,typeFilter,personFilter,projectTeams,projTasks}){
+  const[open,setOpen]=useState(true);
+  const[showAdd,setShowAdd]=useState(false);
+  const[editItem,setEditItem]=useState(null);
+  const[dOver,setDOver]=useState(null);
+  const ti=items.filter(i=>i.teamId===team.id);
+  const total=ti.length,done=ti.filter(i=>i.status==='done').length,pct=total>0?Math.round(done/total*100):0;
+  const isC=pct===100&&total>0,tB=ti.filter(i=>i.type==='bug').length,dB=ti.filter(i=>i.type==='bug'&&i.status==='done').length;
+  const handleUp=item=>{if(item._edit){const{_edit,...rest}=item;setEditItem(rest);return;}onUpdateItem(item);};
+  const dropC=status=>{if(dragState.itemId)onDrop(dragState.itemId,team.id,status);setDOver(null);};
+  return(<div className={`team-sec${isC?' done-t':''}`}>
+    <div className={`team-hdr${open?' open-h':''}`} onClick={()=>setOpen(o=>!o)}>
+      <div className="tname-cell"><span className={`acc-arr${open?' open':''}`}>▶</span><span title={team.name}>{isC?'🎉 ':''}{team.name}</span></div>
+      <div className="tstat"><div className="tstat-v" style={{color:done===total&&total>0?'var(--green)':'var(--text)'}}>{done}/{total}</div><div className="tstat-l">Tamamlanan</div></div>
+      <div className="tstat"><div className="tstat-v" style={{color:tB===0?'var(--text3)':dB===tB?'var(--green)':'var(--red)'}}>{dB}/{tB}</div><div className="tstat-l">Bug</div></div>
+      <div className="tprog"><div className="pb-wrap" style={{flex:1}}><div className="pb-fill" style={{width:`${pct}%`,background:isC?'var(--green)':pct>60?'var(--accent)':'var(--accent2)'}}/></div><div className="tprog-pct" style={{color:isC?'var(--green)':'var(--text2)'}}>{pct}%</div></div>
+      <div className="tdel-cell"><button className="ibtn r" onClick={e=>{e.stopPropagation();onDeleteTeam(team.id);}} title="Sil">×</button></div>
+    </div>
+    {open&&<div className="kb-board">{STATUSES.map(status=>{
+      const ci=ti.filter(i=>i.status===status);
+      const filtered=ci.filter(i=>{if(typeFilter!=='all'&&i.type!==typeFilter)return false;if(personFilter==='none'&&i.assignee)return false;if(personFilter&&personFilter!=='all'&&personFilter!=='none'&&i.assignee!==personFilter)return false;return true;});
+      return(<div key={status} className="kb-col">
+        <div className="kb-col-hdr"><span>{SL[status]}</span><span className="kb-cnt">{filtered.length}</span></div>
+        <div className={`drop-z${dOver===status?' dov':''}`} onDragOver={e=>{e.preventDefault();setDOver(status);}} onDragLeave={()=>setDOver(null)} onDrop={()=>dropC(status)}>
+          {ci.map(item=><KanbanItem key={item.id} item={item} onUpdate={handleUp} onDelete={onDeleteItem} onDragStart={onDragStart} onDragEnd={onDragEnd} isDragging={dragState.itemId===item.id} typeFilter={typeFilter} personFilter={personFilter}/>)}
+        </div>
+        {status==='todo'&&<button className="add-ki-btn" onClick={()=>setShowAdd(true)}>+ Ekle</button>}
+      </div>);
+    })}</div>}
+    {showAdd&&<ItemModal teamId={team.id} projectTeams={projectTeams} projTasks={projTasks} onSave={form=>{onAddItem({id:uid(),...form,status:'todo',teamId:team.id,createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),updatedBy:window.__un||'Kullanıcı'});setShowAdd(false);}} onClose={()=>setShowAdd(false)}/>}
+    {editItem&&<ItemModal teamId={team.id} initial={editItem} projectTeams={projectTeams} projTasks={projTasks} onSave={form=>{onUpdateItem({...editItem,...form});setEditItem(null);}} onClose={()=>setEditItem(null)}/>}
+  </div>);
+}
+
+/* ══ TRACKER TAB ════════════════════════════════════════ */
+function TrackerTab({proj,updateProj}){
+  const{teams,items,projectTeams=[],tasks=[]}=proj;
+  const[newT,setNewT]=useState('');
+  const[drag,setDrag]=useState({itemId:null});
+  const[typeFilter,setTypeFilter]=useState('all');
+  const[personFilter,setPersonFilter]=useState('all');
+  const[teamFilt,setTeamFilt]=useState('all');
+  const[gOpen,setGOpen]=useState(true);
+
+  const addTeam=()=>{const n=newT.trim().slice(0,MAX_NAME);if(!n)return;const nt={id:uid(),name:n};updateProj(p=>({...p,teams:[...p.teams,nt],projectTeams:[...(p.projectTeams||[]),{...nt,members:[]}]}));setNewT('');};
+  const delTeam=id=>{const nm=(teams.find(t=>t.id===id)||{}).name;updateProj(p=>({...p,teams:p.teams.filter(t=>t.id!==id),items:p.items.filter(i=>i.teamId!==id),projectTeams:(p.projectTeams||[]).filter(t=>t.id!==id),tasks:p.tasks.filter(t=>t.teamName!==nm)}));};
+  const addItem=item=>updateProj(p=>({...p,items:[...p.items,item]}));
+  const upItem=item=>updateProj(p=>({...p,items:p.items.map(i=>i.id===item.id?item:i)}));
+  const delItem=id=>updateProj(p=>({...p,items:p.items.filter(i=>i.id!==id)}));
+  const onDS=id=>setDrag({itemId:id}),onDE=()=>setDrag({itemId:null});
+  const onDrop=(iid,toTeam,status)=>{updateProj(p=>({...p,items:p.items.map(i=>i.id===iid?{...i,teamId:toTeam,status,updatedAt:new Date().toISOString(),updatedBy:window.__un||'Kullanıcı'}:i)}));setDrag({itemId:null});};
+  const doExport=()=>{const rows=items.map(i=>({'Ekip':teams.find(t=>t.id===i.teamId)?.name||'','Başlık':i.title,'Tür':i.type.toUpperCase(),'Statü':SL[i.status],'Görev':i.linkedTask||'','Sorumlu':i.assignee||'','Son Güncelleyen':i.updatedBy||'','Güncelleme':i.updatedAt?new Date(i.updatedAt).toLocaleString('tr-TR'):''}));const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Tracker');XLSX.writeFile(wb,`${proj.name}_tracker.xlsx`);};
+
+  const doImportTracker=(e)=>{
+    const file=e.target.files[0];if(!file)return;
+    const reader=new FileReader();
+    reader.onload=ev=>{
+      try{
+        const wb=XLSX.read(ev.target.result,{type:'binary'});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        const rows=XLSX.utils.sheet_to_json(ws);
+        const newItems=rows.filter(r=>r['Başlık']).map(r=>{
+          const teamName=String(r['Ekip']||'');
+          const team=teams.find(t=>t.name===teamName)||teams[0];
+          const statusMap={'TO DO':'todo','IN PROGRESS':'inprogress','IN REVIEW':'review','COMPLETED':'done'};
+          const rawStatus=String(r['Statü']||'').toUpperCase();
+          const status=statusMap[rawStatus]||'todo';
+          return{id:uid(),title:String(r['Başlık']),type:String(r['Tür']||'TASK').toLowerCase()==='bug'?'bug':'task',status,teamId:team?.id||'',linkedTask:String(r['Görev']||''),assignee:String(r['Sorumlu']||''),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),updatedBy:window.__un||'Kullanıcı'};
+        });
+        if(newItems.length===0){alert('Geçerli öğe bulunamadı. "Başlık" sütununun dolu olduğundan emin olun.');return;}
+        updateProj(p=>({...p,items:[...p.items,...newItems]}));
+        alert(`${newItems.length} iş öğesi başarıyla içe aktarıldı.`);
+      }catch(err){alert('Import hatası: '+err.message);}
+    };
+    reader.readAsBinaryString(file);
+    e.target.value='';
+  };
+
+  const agg=useMemo(()=>{const total=items.length,done=items.filter(i=>i.status==='done').length,pct=total>0?Math.round(done/total*100):0,tB=items.filter(i=>i.type==='bug').length,dB=items.filter(i=>i.type==='bug'&&i.status==='done').length;return{total,done,pct,tB,dB};},[items]);
+  const tStats=useMemo(()=>teams.map(team=>{const ti=items.filter(i=>i.teamId===team.id);const total=ti.length,done=ti.filter(i=>i.status==='done').length,pct=total>0?Math.round(done/total*100):0,tB=ti.filter(i=>i.type==='bug').length,dB=ti.filter(i=>i.type==='bug'&&i.status==='done').length;return{team,total,done,pct,tB,dB};}),[teams,items]);
+  // Only members actually used in items
+  const usedMembers=useMemo(()=>{const names=new Set(items.filter(i=>i.assignee).map(i=>i.assignee));return[...names];},[items]);
+  const visTeams=teamFilt==='all'?teams:teams.filter(t=>t.id===teamFilt);
+
+  return(<div>
+    {teams.length>0&&<div className="gsum">
+      <div className={`gsum-hdr${gOpen?' open':''}`} onClick={()=>setGOpen(o=>!o)}>
+        <span className={`acc-arr${gOpen?' open':''}`}>▶</span>
+        <span className="gsum-title">Genel Özet</span>
+        <span className="badge b-bl">{agg.done}/{agg.total}</span>
+        {agg.tB>0&&<span className="badge b-rd" style={{marginLeft:4}}>{agg.dB}/{agg.tB} bug</span>}
+        <div className="pb-wrap" style={{width:80,marginLeft:8}}><div className="pb-fill" style={{width:`${agg.pct}%`,background:agg.pct===100?'var(--green)':agg.pct>60?'var(--accent)':'var(--accent2)'}}/></div>
+        <span style={{fontSize:'.72rem',fontFamily:'var(--fm)',color:agg.pct===100?'var(--green)':'var(--text2)',minWidth:34,marginLeft:6}}>{agg.pct}%</span>
+      </div>
+      {gOpen&&<div className="gsum-body">
+        {tStats.map(({team,total,done,pct,tB,dB})=>(
+          <div key={team.id} className="tsrow">
+            <div className="tsrow-name" title={team.name}>{pct===100&&total>0?'🎉 ':''}{team.name}</div>
+            <div className="tsrow-stats">
+              <div className="tss"><div className="tdot tdot-g"/>{done}/{total}</div>
+              {tB>0&&<div className="tss"><div className="tdot tdot-r"/>{dB}/{tB} bug</div>}
+              <div className="pb-wrap" style={{width:70}}><div className="pb-fill" style={{width:`${pct}%`,background:pct===100?'var(--green)':pct>60?'var(--accent)':'var(--accent2)'}}/></div>
+              <span style={{fontSize:'.7rem',fontFamily:'var(--fm)',color:pct===100?'var(--green)':'var(--text2)',minWidth:30}}>{pct}%</span>
+            </div>
+          </div>
+        ))}
+        <div className="tsrow" style={{borderTop:'1px solid var(--border)',paddingTop:8,marginTop:4}}>
+          <div className="tsrow-name" style={{fontWeight:700}}>⬡ Toplam</div>
+          <div className="tsrow-stats">
+            <div className="tss"><div className="tdot tdot-g"/>{agg.done}/{agg.total}</div>
+            {agg.tB>0&&<div className="tss"><div className="tdot tdot-r"/>{agg.dB}/{agg.tB} bug</div>}
+            <div className="pb-wrap" style={{width:70}}><div className="pb-fill" style={{width:`${agg.pct}%`,background:agg.pct===100?'var(--green)':agg.pct>60?'var(--accent)':'var(--accent2)'}}/></div>
+            <span style={{fontSize:'.7rem',fontFamily:'var(--fm)',color:agg.pct===100?'var(--green)':'var(--text2)',minWidth:30,fontWeight:700}}>{agg.pct}%</span>
+          </div>
+        </div>
+      </div>}
+    </div>}
+    <div className="tk-top">
+      <input className="inp" style={{maxWidth:200}} placeholder="Yeni ekip adı..." maxLength={MAX_NAME} value={newT} onChange={e=>setNewT(e.target.value.replace(/[^a-zA-Z0-9çÇğĞıİöÖşŞüÜ\s]/g,'').slice(0,MAX_NAME))} onKeyDown={e=>e.key==='Enter'&&addTeam()}/>
+      <button className="btn btn-p" onClick={addTeam}>+ Ekip</button>
+      {teams.length>1&&<select className="sel" style={{width:'auto',padding:'5px 8px',fontSize:'.8rem',maxWidth:140}} value={teamFilt} onChange={e=>setTeamFilt(e.target.value)}>
+        <option value="all">Tüm Ekipler</option>
+        {teams.map(t=><option key={t.id} value={t.id} title={t.name}>{t.name.length>16?t.name.slice(0,16)+'…':t.name}</option>)}
+      </select>}
+      <div style={{display:'flex',gap:4}}>{[['all','Tümü'],['task','Task'],['bug','Bug']].map(([v,l])=><button key={v} className={`fpill${typeFilter===v?' on':''}`} onClick={()=>setTypeFilter(v)}>{l}</button>)}</div>
+      {usedMembers.length>0&&<select className="sel" style={{width:'auto',padding:'5px 8px',fontSize:'.8rem',maxWidth:130}} value={personFilter} onChange={e=>setPersonFilter(e.target.value)}>
+        <option value="all">Tüm Kişiler</option>
+        <option value="none">Atanmamış</option>
+        {usedMembers.map(name=><option key={name} value={name} title={name}>{name.length>14?name.slice(0,14)+'…':name}</option>)}
+      </select>}
+      {items.length>0&&<button className="btn btn-gr btn-sm" style={{marginLeft:'auto'}} onClick={doExport}>📊 Excel</button>}
+      <label className="btn btn-or btn-sm" style={{cursor:'pointer',margin:0}}>
+        📥 Import
+        <input type="file" accept=".xlsx,.xls" style={{display:'none'}} onChange={doImportTracker}/>
+      </label>
+    </div>
+    {teams.length===0?<div style={{textAlign:'center',padding:'48px 20px',color:'var(--text3)'}}><div style={{fontSize:'2rem',marginBottom:8}}>👥</div><div style={{fontFamily:'var(--fd)',fontWeight:600,color:'var(--text2)',marginBottom:4}}>Henüz ekip yok</div><div style={{fontSize:'.82rem'}}>Timeline'dan veya buradan ekip ekleyin</div></div>
+    :visTeams.map(team=><TeamSection key={team.id} team={team} items={items} onUpdateItem={upItem} onDeleteItem={delItem} onAddItem={addItem} onDeleteTeam={delTeam} dragState={drag} onDragStart={onDS} onDragEnd={onDE} onDrop={onDrop} typeFilter={typeFilter} personFilter={personFilter} projectTeams={projectTeams} projTasks={tasks}/>)}
+  </div>);
+}
+
+/* ══ DASHBOARD ══════════════════════════════════════════ */
+function Dashboard({projects,onSelect}){
+  const today=todayStr();
+  const info=projects.map(proj=>{
+    const sc=computeSched(proj.tasks);
+    const ps=pStart(sc),pe=pEnd(sc);
+    const delay=pe&&proj.baselineEnd?Math.max(0,diffDays(proj.baselineEnd,pe)):0;
+    const completedAt=proj.completedAt;
+    const hasStarted=!!(ps&&ps<=today);
+    // status for card grouping: completed > active (started, not completed) > not_started
+    let status='not_started';
+    if(completedAt)status='completed';
+    else if(hasStarted)status='active'; // ALL started+non-completed projects = active
+    else status='not_started';
+    // isOverdue: non-completed project with baseline delay > 0
+    const isOverdue=!completedAt&&delay>0;
+    const tkTotal=proj.items?.length||0;
+    const tkDone=(proj.items||[]).filter(i=>i.status==='done').length;
+    const tkPct=tkTotal>0?Math.round(tkDone/tkTotal*100):0;
+    const teamsCount=(proj.projectTeams||[]).length;
+    return{proj,ps,pe,delay,completedAt,status,isOverdue,tkTotal,tkDone,tkPct,teamsCount,taskCount:proj.tasks.length};
+  });
+
+  const groups={
+    active:info.filter(p=>p.status==='active'),
+    not_started:info.filter(p=>p.status==='not_started'),
+    completed:info.filter(p=>p.status==='completed'),
+  };
+  // Overdue count = non-completed projects with delay > 0
+  const overdueCount=info.filter(p=>p.isOverdue).length;
+  const totalDelay=info.filter(p=>p.isOverdue).reduce((s,p)=>s+p.delay,0);
+
+  const STATUS_STRIP={active:'var(--green)',overdue:'var(--red)',not_started:'var(--text3)',completed:'var(--teal)'};
+  const STATUS_LABEL={active:'Devam Ediyor',overdue:'Gecikmiş',not_started:'Başlamadı',completed:'Tamamlandı'};
+  const STATUS_COLOR={active:'var(--green)',overdue:'var(--red)',not_started:'var(--text2)',completed:'var(--teal)'};
+
+  function ProjCard({info}){
+    const{proj,ps,pe,delay,completedAt,status,isOverdue,tkTotal,tkDone,tkPct,teamsCount,taskCount}=info;
+    const cardColor=isOverdue&&!completedAt?'var(--red)':STATUS_STRIP[status];
+    return(<div className="dash-card" onClick={()=>onSelect(proj.id)}>
+      <div className="dash-card-strip" style={{background:cardColor}}/>
+      <div className="dash-card-name">{proj.name}</div>
+      <div style={{display:'flex',gap:5,flexWrap:'wrap',marginBottom:12}}>
+        <div style={{display:'inline-flex',alignItems:'center',gap:4,padding:'2px 9px',borderRadius:20,background:STATUS_STRIP[status]+'20',color:STATUS_COLOR[status],fontSize:'.68rem',fontWeight:700,border:`1px solid ${STATUS_STRIP[status]}30`}}>
+          {status==='active'?'🟢':status==='not_started'?'⬜':'✅'} {STATUS_LABEL[status]}
+        </div>
+        {isOverdue&&!completedAt&&<div style={{display:'inline-flex',alignItems:'center',gap:4,padding:'2px 9px',borderRadius:20,background:'var(--red-l)',color:'var(--red)',fontSize:'.68rem',fontWeight:700,border:'1px solid rgba(185,28,28,.2)'}}>
+          🔴 Gecikmiş
+        </div>}
+      </div>
+      <div className="dash-card-rows">
+        <div className="dash-card-row"><span className="dash-card-row-lbl">Başlangıç</span><span className="dash-card-row-val">{ps?fmt(ps):'—'}</span></div>
+        <div className="dash-card-row"><span className="dash-card-row-lbl">Planlanan Bitiş</span><span className="dash-card-row-val">{proj.baselineEnd?fmt(proj.baselineEnd):pe?fmt(pe):'—'}</span></div>
+        {!completedAt&&delay>0&&<div className="dash-card-row"><span className="dash-card-row-lbl">Güncel Bitiş</span><span className="dash-card-row-val" style={{color:'var(--red)'}}>{fmt(pe)} <span style={{fontSize:'.67rem'}}>+{delay}g</span></span></div>}
+        {completedAt&&<div className="dash-card-row"><span className="dash-card-row-lbl">Gerçek Bitiş</span><span className="dash-card-row-val" style={{color:'var(--teal)'}}>{fmt(completedAt)}</span></div>}
+        <div className="dash-card-row"><span className="dash-card-row-lbl">Görev Sayısı</span><span className="dash-card-row-val">{taskCount}</span></div>
+        <div className="dash-card-row"><span className="dash-card-row-lbl">Ekip Sayısı</span><span className="dash-card-row-val">{teamsCount}</span></div>
+      </div>
+      {tkTotal>0&&<div className="dash-card-pb">
+        <div className="dash-card-pb-hdr"><span>Tracker İlerleme</span><span style={{fontFamily:'var(--fm)',fontSize:'.7rem'}}>{tkDone}/{tkTotal} ({tkPct}%)</span></div>
+        <div className="pb-wrap" style={{height:6}}><div className="pb-fill" style={{width:`${tkPct}%`,background:tkPct===100?'var(--green)':tkPct>60?'var(--accent)':'var(--accent2)'}}/></div>
+      </div>}
+    </div>);
+  }
+
+  const orderedGroups=[
+    {key:'active',label:'🟢 Devam Eden',color:'var(--green)',items:groups.active},
+    {key:'not_started',label:'⬜ Henüz Başlamadı',color:'var(--text2)',items:groups.not_started},
+    {key:'completed',label:'✅ Tamamlanan',color:'var(--teal)',items:groups.completed},
+  ];
+
+  return(<div>
+    {/* Hero stats - 5 cards: total, active, delayed, not-started, completed */}
+    <div className="dash-hero">
+      <div className="dash-hero-card dhc-total">
+        <div style={{fontSize:'.72rem',color:'var(--text2)',fontWeight:600,textTransform:'uppercase',letterSpacing:'.06em'}}>Toplam Proje</div>
+        <div className="dhc-val" style={{color:'var(--accent)'}}>{projects.length}</div>
+        <div style={{fontSize:'.72rem',color:'var(--text3)',marginTop:4}}>tüm projeler</div>
+      </div>
+      <div className="dash-hero-card dhc-active">
+        <div style={{fontSize:'.72rem',color:'var(--text2)',fontWeight:600,textTransform:'uppercase',letterSpacing:'.06em'}}>Aktif</div>
+        <div className="dhc-val" style={{color:'var(--green)'}}>{groups.active.length}</div>
+        <div style={{fontSize:'.72rem',color:'var(--text3)',marginTop:4}}>devam ediyor</div>
+      </div>
+      <div className="dash-hero-card dhc-delayed">
+        <div style={{fontSize:'.72rem',color:'var(--text2)',fontWeight:600,textTransform:'uppercase',letterSpacing:'.06em'}}>Gecikmiş</div>
+        <div className="dhc-val" style={{color:'var(--red)'}}>{overdueCount}</div>
+        <div style={{fontSize:'.72rem',color:'var(--text3)',marginTop:4}}>{totalDelay>0?`+${totalDelay}g toplam`:overdueCount===0?'sorun yok':'dikkat!'}</div>
+      </div>
+      <div className="dash-hero-card dhc-notstart">
+        <div style={{fontSize:'.72rem',color:'var(--text2)',fontWeight:600,textTransform:'uppercase',letterSpacing:'.06em'}}>Başlamadı</div>
+        <div className="dhc-val" style={{color:'var(--text2)'}}>{groups.not_started.length}</div>
+        <div style={{fontSize:'.72rem',color:'var(--text3)',marginTop:4}}>planlanıyor</div>
+      </div>
+      <div className="dash-hero-card dhc-done">
+        <div style={{fontSize:'.72rem',color:'var(--text2)',fontWeight:600,textTransform:'uppercase',letterSpacing:'.06em'}}>Tamamlanan</div>
+        <div className="dhc-val" style={{color:'var(--teal)'}}>{groups.completed.length}</div>
+        <div style={{fontSize:'.72rem',color:'var(--text3)',marginTop:4}}>sonlandırıldı</div>
+      </div>
+    </div>
+    {/* Groups */}
+    {orderedGroups.map(g=>g.items.length>0&&(
+      <div key={g.key} className="dash-section">
+        <div className="dash-section-hdr">
+          <span className="dash-section-title" style={{color:g.color}}>{g.label}</span>
+          <span className="dash-section-count">({g.items.length})</span>
+        </div>
+        <div className="dash-grid">{g.items.map(i=><ProjCard key={i.proj.id} info={i}/>)}</div>
+      </div>
+    ))}
+    {projects.length===0&&<div style={{textAlign:'center',padding:'80px 20px',color:'var(--text3)'}}><div style={{fontSize:'3rem',marginBottom:14}}>📋</div><div style={{fontFamily:'var(--fd)',fontWeight:700,color:'var(--text2)',fontSize:'1.2rem',marginBottom:8}}>Henüz proje yok</div><div style={{fontSize:'.85rem'}}>Yukarıdan "+ Yeni Proje" ile başlayın</div></div>}
+  </div>);
+}
+
+/* ══ SHARE / PROJECT MODALS ═════════════════════════════ */
+function ShareModal({proj,onClose}){
+  const[c,setC]=useState(false);
+  // Generate share URL using shareKey (not encoded project data)
+  const shareKey=proj.shareKey||proj.id;
+  const url=`${location.origin}${location.pathname}?key=${shareKey}`;
+  const copy=()=>{navigator.clipboard.writeText(url).then(()=>{setC(true);setTimeout(()=>setC(false),2500);});};
+  return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onClose()}><div className="modal modal-sm">
+    <div className="modal-title">🔗 Projeyi Paylaş</div>
+    <p style={{fontSize:'.83rem',color:'var(--text2)',marginBottom:14,lineHeight:1.55}}>Bu bağlantıyı paylaştığınız kişiler <strong>yalnızca bu projeyi</strong> görür ve düzenleyebilir. Değişiklikler anlık olarak senkronize edilir.</p>
+    <div className="share-url">{url}</div>
+    <div style={{marginTop:10,fontSize:'.72rem',color:'var(--text3)'}}>ℹ️ Linki alan kişi diğer projelerinizi göremez.</div>
+    <div className="form-foot"><button className="btn btn-g" onClick={onClose}>Kapat</button><button className="btn btn-p" onClick={copy}>{c?'✓ Kopyalandı!':'📋 Kopyala'}</button></div>
+  </div></div>);
+}
+
+function ProjectModal({onSave,onClose}){const[name,setName]=useState('');const submit=()=>{if(!name.trim())return;onSave(name.trim());};
+return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onClose()}><div className="modal modal-sm"><div className="modal-title">Yeni Proje</div><div className="fr"><div><label className="lbl">Proje Adı *</label><input className="inp" placeholder="Örn: Mobil Uygulama" value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&submit()} autoFocus/></div></div><div className="form-foot"><button className="btn btn-g" onClick={onClose}>İptal</button><button className="btn btn-p" onClick={submit}>Oluştur</button></div></div></div>);}
+
+function WelcomeScreen({onEnter}){const[name,setName]=useState('');const enter=()=>{if(!name.trim())return;onEnter(name.trim());};
+return(<div className="wscreen"><div className="wbox"><div className="wlogo">Project<em>Flow</em></div><div style={{fontSize:'.9rem',color:'var(--text2)',marginBottom:30}}>Ekip tabanlı proje takip sistemi</div><label className="lbl" style={{textAlign:'left',display:'block',marginBottom:6}}>Adınız *</label><input className="inp" placeholder="Adınızı girin..." value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&enter()} autoFocus style={{marginBottom:14}}/><button className="btn btn-p" style={{width:'100%',justifyContent:'center',padding:10}} onClick={enter}>Başla →</button><div style={{marginTop:14,fontSize:'.72rem',color:'var(--text3)'}}>Verileriniz bu tarayıcıda saklanır</div></div></div>);}
+
+function ProjName({name,onRename,active}){const[editing,setEditing]=useState(false);const[val,setVal]=useState(name);const ref=useRef(null);useEffect(()=>setVal(name),[name]);useEffect(()=>{if(editing&&ref.current)ref.current.focus();},[editing]);const commit=()=>{if(val.trim())onRename(val.trim());setEditing(false);};
+if(active&&editing)return<span onClick={e=>e.stopPropagation()}><input ref={ref} className="pname-inp" value={val} onChange={e=>setVal(e.target.value)} onBlur={commit} onKeyDown={e=>{if(e.key==='Enter')commit();if(e.key==='Escape'){setVal(name);setEditing(false);}}} style={{width:Math.max(60,val.length*9)+'px'}}/></span>;
+return<span className="pchip-name" onDoubleClick={()=>active&&setEditing(true)} title={active?`${name} (çift tıkla: yeniden adlandır)`:name}>{name}{active&&<span style={{marginLeft:3,fontSize:'.6rem',color:'var(--text3)',opacity:.5}}>✎</span>}</span>;}
+
+/* ══ APP ════════════════════════════════════════════════ */
+// localStorage key for owned project IDs
+const OWNED_KEY='pf_owned_v1';
+const loadOwned=()=>{try{return JSON.parse(localStorage.getItem(OWNED_KEY)||'[]');}catch{return [];}};
+const saveOwned=ids=>{try{localStorage.setItem(OWNED_KEY,JSON.stringify(ids));}catch{}};
+
+function App(){
+  // Detect if opened via share link (?key=xxx)
+  const urlParams=new URLSearchParams(location.search);
+  const shareKeyParam=urlParams.get('key');
+  const isGuestMode=!!shareKeyParam; // guest = opened via share link
+
+  const[state,setRaw]=useState(()=>loadAll()||defState());
+  const[syncStatus,setSyncStatus]=useState('idle');
+  const[loaded,setLoaded]=useState(false);
+  const[guestProj,setGuestProj]=useState(null); // the single shared project for guest
+  const[guestLoading,setGuestLoading]=useState(isGuestMode);
+  const ignoreNextRemote=useRef(new Set());
+
+  const setState=useCallback(fn=>{
+    setRaw(prev=>{
+      const next=typeof fn==='function'?fn(prev):fn;
+      saveAll(next);
+      return next;
+    });
+  },[]);
+
+  const sbSync=useCallback(async(proj)=>{
+    setSyncStatus('syncing');
+    ignoreNextRemote.current.add(proj.id);
+    await sbSaveProj(proj);
+    setSyncStatus('ok');
+    setTimeout(()=>setSyncStatus('idle'),2000);
+  },[]);
+
+  const setStateAndSync=useCallback(fn=>{
+    setRaw(prev=>{
+      const next=typeof fn==='function'?fn(prev):fn;
+      saveAll(next);
+      const changed=next.projects.filter(np=>{
+        const op=prev.projects.find(p=>p.id===np.id);
+        return !op||JSON.stringify(op)!==JSON.stringify(np);
+      });
+      changed.forEach(p=>sbSync(p));
+      return next;
+    });
+  },[sbSync]);
+
+  // For guest mode: update guestProj and sync
+  const updateGuestProj=useCallback(fn=>{
+    setGuestProj(prev=>{
+      const next=typeof fn==='function'?fn(prev):fn;
+      if(next)sbSync(next);
+      return next;
+    });
+  },[sbSync]);
+
+  const{userName,projects,activeProjId,activeTab}=state;
+  window.__un=userName;
+
+  // ── GUEST MODE: load single project by shareKey ─────────
+  useEffect(()=>{
+    if(!isGuestMode)return;
+    (async()=>{
+      setGuestLoading(true);
+      const proj=await sbLoadByShareKey(shareKeyParam);
+      setGuestProj(proj);
+      setGuestLoading(false);
+    })();
+  },[]);
+
+  // ── OWNER MODE: load owned projects from Supabase ───────
+  useEffect(()=>{
+    if(isGuestMode)return;
+    (async()=>{
+      setSyncStatus('syncing');
+      const ownedIds=loadOwned();
+      const localState=loadAll()||defState();
+      const localProjs=localState.projects;
+
+      // Ensure all local projects have a shareKey (migrate old projects)
+      const migratedLocal=localProjs.map(p=>p.shareKey?p:{...p,shareKey:uid()+uid()});
+      const allIds=[...new Set([...ownedIds,...migratedLocal.map(p=>p.id)])];
+
+      if(allIds.length>0){
+        const remoteProjs=await sbLoadAll(allIds);
+        if(remoteProjs&&remoteProjs.length>0){
+          setRaw(prev=>{
+            const localOnly=prev.projects.filter(lp=>!remoteProjs.find(rp=>rp.id===lp.id));
+            // Ensure remote projects also have shareKey
+            const remoteWithKey=remoteProjs.map(p=>p.shareKey?p:{...p,shareKey:uid()+uid()});
+            const merged=[...remoteWithKey,...localOnly];
+            const next={...prev,projects:merged};
+            saveAll(next);
+            return next;
+          });
+        } else {
+          // No remote data - use migrated local, save them all to Supabase
+          setRaw(prev=>{
+            const next={...prev,projects:migratedLocal};
+            saveAll(next);
+            return next;
+          });
+          // Push all local projects to Supabase
+          for(const p of migratedLocal) await sbSaveProj(p);
+        }
+      }
+      setSyncStatus('ok');
+      setTimeout(()=>setSyncStatus('idle'),2000);
+      setLoaded(true);
+    })();
+  },[]);
+
+  // ── Auto-complete ───────────────────────────────────────
+  useEffect(()=>{
+    if(!loaded||isGuestMode)return;
+    const today=todayStr();
+    setStateAndSync(s=>{
+      let changed=false;
+      const updated=s.projects.map(p=>{
+        if(p.completedAt)return p;
+        if(!p.tasks||p.tasks.length===0)return p;
+        const sc=computeSched(p.tasks);
+        const pe=pEnd(sc);
+        if(pe&&pe<today){changed=true;return{...p,completedAt:pe};}
+        return p;
+      });
+      if(!changed)return s;
+      return{...s,projects:updated};
+    });
+  },[loaded]);
+
+  // ── Realtime subscription ───────────────────────────────
+  useEffect(()=>{
+    const channel=sb.channel('projects-rt-v2')
+      .on('postgres_changes',{event:'*',schema:'public',table:'projects'},payload=>{
+        const{eventType,new:row,old}=payload;
+        if(eventType==='DELETE'){
+          const did=old?.id;
+          if(!did)return;
+          if(isGuestMode){if(guestProj?.id===did)setGuestProj(null);}
+          else setRaw(prev=>{const rem=prev.projects.filter(p=>p.id!==did);const next={...prev,projects:rem,activeProjId:prev.activeProjId===did?(rem[0]?.id||null):prev.activeProjId};saveAll(next);return next;});
+          return;
+        }
+        const incoming=row?.data;
+        if(!incoming?.id)return;
+        if(ignoreNextRemote.current.has(incoming.id)){ignoreNextRemote.current.delete(incoming.id);return;}
+        if(isGuestMode){
+          // Guest: only update if this is the shared project
+          if(incoming.id===guestProj?.id||incoming.shareKey===shareKeyParam)setGuestProj(incoming);
+        } else {
+          // Owner: only update if this is one of our projects
+          setRaw(prev=>{
+            if(!prev.projects.some(p=>p.id===incoming.id))return prev; // not our project, ignore
+            const updated=prev.projects.map(p=>p.id===incoming.id?incoming:p);
+            const next={...prev,projects:updated};
+            saveAll(next);
+            return next;
+          });
+        }
+      })
+      .subscribe();
+    return()=>{sb.removeChannel(channel);};
+  },[isGuestMode,guestProj?.id]);
+
+  // ── Save owned IDs when projects change ─────────────────
+  useEffect(()=>{
+    if(isGuestMode)return;
+    saveOwned(projects.map(p=>p.id));
+  },[projects,isGuestMode]);
+
+  const[showNewProj,setShowNewProj]=useState(false);
+  const[showShare,setShowShare]=useState(false);
+  const[confirmDel,setConfirmDel]=useState(null);
+
+  const apid=activeProjId||(projects.length>0?projects[0]?.id:null);
+  const proj=projects.find(p=>p.id===apid)||null;
+
+  const updProj=fn=>setStateAndSync(s=>({...s,projects:s.projects.map(p=>p.id===apid?(typeof fn==='function'?fn(p):fn):p)}));
+  const setTab=t=>setState(s=>({...s,activeTab:t}));
+
+  const addProject=name=>{
+    const np=defProj(name);
+    setStateAndSync(s=>({...s,projects:[...s.projects,np],activeProjId:np.id,activeTab:'timeline'}));
+    setShowNewProj(false);
+  };
+  const deleteProject=id=>{
+    setRaw(s=>{const rem=s.projects.filter(p=>p.id!==id);const next={...s,projects:rem,activeProjId:rem.length>0?rem[rem.length-1].id:null,activeTab:'dashboard'};saveAll(next);return next;});
+    sbDeleteProj(id);
+    setConfirmDel(null);
+  };
+  const renameProj=(id,name)=>setStateAndSync(s=>({...s,projects:s.projects.map(p=>p.id===id?{...p,name}:p)}));
+  const selectProject=id=>setState(s=>({...s,activeProjId:id,activeTab:'timeline'}));
+  const goDash=()=>setState(s=>({...s,activeTab:'dashboard',activeProjId:null}));
+
+  const syncLabel=syncStatus==='syncing'?'Senkronize ediliyor...':syncStatus==='ok'?'Senkronize edildi':syncStatus==='error'?'Bağlantı hatası':'Canlı';
+  const syncClass=syncStatus==='syncing'?'syncing':syncStatus==='error'?'error':'';
+
+  // ── GUEST MODE RENDER ───────────────────────────────────
+  if(isGuestMode){
+    if(guestLoading)return<div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',flexDirection:'column',gap:12,color:'var(--text2)'}}><div style={{width:36,height:36,border:'3px solid var(--border)',borderTop:'3px solid var(--accent)',borderRadius:'50%',animation:'spin 1s linear infinite'}}/><div style={{fontSize:'.9rem'}}>Proje yükleniyor...</div><style>{`@keyframes spin{to{transform:rotate(360deg)}}`}</style></div>;
+    if(!guestProj)return<div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',flexDirection:'column',gap:12,color:'var(--text2)'}}><div style={{fontSize:'2rem'}}>🔒</div><div style={{fontFamily:'var(--fd)',fontWeight:700,fontSize:'1.1rem',color:'var(--text)'}}>Proje bulunamadı</div><div style={{fontSize:'.85rem'}}>Bu paylaşım linki geçersiz veya proje silinmiş olabilir.</div></div>;
+    if(!userName)return<WelcomeScreen onEnter={name=>setState(s=>({...s,userName:name}))}/>;
+    const isDash2=false;
+    return(<div className="app">
+      <header className="hdr">
+        <div className="logo"><div className="lm">PF</div>ProjectFlow</div>
+        <div className="hdr-tabs">
+          <button className={`htab${activeTab==='timeline'?' on':''}`} onClick={()=>setTab('timeline')}>📅 Timeline</button>
+          <button className={`htab${activeTab==='tracker'?' on':''}`} onClick={()=>setTab('tracker')}>📌 Tracker</button>
+        </div>
+        <div className="hdr-r">
+          <div className="sync-chip" title={syncLabel}><div className={`sync-dot ${syncClass}`}/><span>{syncLabel}</span></div>
+          <div className="dchip">📅 {fmtFull(todayStr())}</div>
+          <div className="uchip" title="Tıkla değiştir" onClick={()=>setState(s=>({...s,userName:''}))}>
+            <div className="uav">{userName.slice(0,2).toUpperCase()}</div>{userName}
+          </div>
+        </div>
+      </header>
+      <div className="pbar">
+        <button className="pchip on"><span className="pchip-name">{guestProj.name}</span></button>
+        <span style={{fontSize:'.72rem',color:'var(--text3)',padding:'0 10px',alignSelf:'center'}}>🔗 Paylaşılan proje</span>
+      </div>
+      <main className="main">
+        {activeTab==='timeline'&&<TimelineTab proj={guestProj} updateProj={updateGuestProj}/>}
+        {activeTab==='tracker'&&<TrackerTab proj={guestProj} updateProj={updateGuestProj}/>}
+      </main>
+    </div>);
+  }
+
+  // ── OWNER MODE RENDER ───────────────────────────────────
+  if(!userName)return<WelcomeScreen onEnter={name=>setState(s=>({...s,userName:name}))}/>;
+  const isDash=activeTab==='dashboard';
+
+  return(<div className="app">
+    <header className="hdr">
+      <div className="logo"><div className="lm">PF</div>ProjectFlow</div>
+      <div className="hdr-tabs">
+        <button className={`htab${isDash?' on':''}`} onClick={goDash}>🏠 Dashboard</button>
+        {!isDash&&<>
+          <button className={`htab${activeTab==='timeline'?' on':''}`} onClick={()=>setTab('timeline')}>📅 Timeline</button>
+          <button className={`htab${activeTab==='tracker'?' on':''}`} onClick={()=>setTab('tracker')}>📌 Tracker</button>
+        </>}
+      </div>
+      <div className="hdr-r">
+        <div className="sync-chip" title={syncLabel}><div className={`sync-dot ${syncClass}`}/><span>{syncLabel}</span></div>
+        {proj&&!isDash&&<button className="btn btn-sh btn-sm" onClick={()=>setShowShare(true)}>🔗 Paylaş</button>}
+        <div className="dchip">📅 {fmtFull(todayStr())}</div>
+        <div className="uchip" title="Tıkla değiştir" onClick={()=>setState(s=>({...s,userName:''}))}>
+          <div className="uav">{userName.slice(0,2).toUpperCase()}</div>{userName}
+        </div>
+      </div>
+    </header>
+    {!isDash&&<div className="pbar">
+      {projects.map(p=><button key={p.id} className={`pchip${p.id===apid?' on':''}`} onClick={()=>setState(s=>({...s,activeProjId:p.id,activeTab:'timeline'}))}>
+        <ProjName name={p.name} active={p.id===apid} onRename={name=>renameProj(p.id,name)}/>
+        <span className="proj-del-btn" onClick={e=>{e.stopPropagation();setConfirmDel(p.id);}} title="Projeyi sil">×</span>
+      </button>)}
+      <button className="pchip ap" onClick={()=>setShowNewProj(true)}>+ Yeni Proje</button>
+    </div>}
+    <main className="main">
+      {isDash&&<>
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:24}}>
+          <div><div style={{fontFamily:'var(--fd)',fontWeight:800,fontSize:'1.6rem',letterSpacing:'-.03em',color:'var(--text)'}}>Dashboard</div><div style={{fontSize:'.83rem',color:'var(--text2)',marginTop:2}}>Tüm projelerinizin özet görünümü</div></div>
+          <button className="btn btn-p" onClick={()=>setShowNewProj(true)}>+ Yeni Proje</button>
+        </div>
+        <Dashboard projects={projects} onSelect={selectProject}/>
+      </>}
+      {!isDash&&proj&&activeTab==='timeline'&&<TimelineTab proj={proj} updateProj={updProj}/>}
+      {!isDash&&proj&&activeTab==='tracker'&&<TrackerTab proj={proj} updateProj={updProj}/>}
+    </main>
+    {showNewProj&&<ProjectModal onSave={addProject} onClose={()=>setShowNewProj(false)}/>}
+    {showShare&&proj&&<ShareModal proj={proj} onClose={()=>setShowShare(false)}/>}
+    {confirmDel&&<ConfirmModal title="Projeyi Sil" message={`"${projects.find(p=>p.id===confirmDel)?.name}" projesini ve tüm verilerini silmek istediğinizden emin misiniz?`} onConfirm={()=>deleteProject(confirmDel)} onCancel={()=>setConfirmDel(null)}/>}
+  </div>);
+}
+ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
