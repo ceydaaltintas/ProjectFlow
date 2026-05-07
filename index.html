@@ -1152,7 +1152,18 @@ function TimelineTab({proj,updateProj}){
   const deleteMember=(teamId,memberId)=>updateProj(p=>({...p,projectTeams:(p.projectTeams||[]).map(t=>t.id===teamId?{...t,members:(t.members||[]).filter(m=>m.id!==memberId)}:t)}));
 
   // Task management
-  const addTask=form=>{updateProj(p=>({...p,tasks:[...p.tasks,{...form,id:uid()}]}));setActiveModal(null);};
+  const addTask=form=>{
+    updateProj(p=>{
+      const newId=uid();
+      const newTask={...form,id:newId};
+      // If baseline is already set, snapshot this task into baselineTasks immediately
+      // so future duration increases are detected as "uzama"
+      const blEntry=p.baselineEnd&&p.baselineTasks?computeSched([newTask])[0]:null;
+      return{...p,tasks:[...p.tasks,newTask],
+        baselineTasks:blEntry?[...p.baselineTasks,blEntry]:p.baselineTasks};
+    });
+    setActiveModal(null);
+  };
   const editSave=form=>{
     updateProj(p=>({...p,tasks:p.tasks.map(t=>t.id===activeModal.task.id?{...form,id:t.id}:t)}));
     setActiveModal(null);
