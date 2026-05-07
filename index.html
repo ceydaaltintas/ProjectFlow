@@ -2076,12 +2076,13 @@ function App(){
     if(!guestProj)return<div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',flexDirection:'column',gap:12,color:'var(--text2)'}}><div style={{fontSize:'2rem'}}>🔒</div><div style={{fontFamily:'var(--fd)',fontWeight:700,fontSize:'1.1rem',color:'var(--text)'}}>Proje bulunamadı</div><div style={{fontSize:'.85rem'}}>Bu paylaşım linki geçersiz veya proje silinmiş olabilir.</div></div>;
     if(!userName)return<WelcomeScreen onEnter={name=>setState(s=>({...s,userName:name}))}/>;
     const isDash2=false;
+    const guestTab=activeTab==='tracker'?'tracker':'timeline';
     return(<div className="app">
       <header className="hdr">
         <div className="logo"><div className="lm">PF</div>ProjectFlow</div>
         <div className="hdr-tabs">
-          <button className={`htab${activeTab==='timeline'?' on':''}`} onClick={()=>setTab('timeline')}>📅 Timeline</button>
-          <button className={`htab${activeTab==='tracker'?' on':''}`} onClick={()=>setTab('tracker')}>📌 Tracker</button>
+          <button className={`htab${guestTab==='timeline'?' on':''}`} onClick={()=>setTab('timeline')}>📅 Timeline</button>
+          <button className={`htab${guestTab==='tracker'?' on':''}`} onClick={()=>setTab('tracker')}>📌 Tracker</button>
         </div>
         <div className="hdr-r">
           <div className="sync-chip" title={syncLabel}><div className={`sync-dot ${syncClass}`}/><span>{syncLabel}</span></div>
@@ -2096,8 +2097,8 @@ function App(){
         <span style={{fontSize:'.72rem',color:'var(--text3)',padding:'0 10px',alignSelf:'center'}}>🔗 Paylaşılan proje</span>
       </div>
       <main className="main">
-        {activeTab==='timeline'&&<TimelineTab proj={guestProj} updateProj={updateGuestProj}/>}
-        {activeTab==='tracker'&&<TrackerTab proj={guestProj} updateProj={updateGuestProj}/>}
+        {guestTab==='timeline'&&<TimelineTab proj={guestProj} updateProj={updateGuestProj}/>}
+        {guestTab==='tracker'&&<TrackerTab proj={guestProj} updateProj={updateGuestProj}/>}
       </main>
     </div>);
   }
