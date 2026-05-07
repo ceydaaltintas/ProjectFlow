@@ -179,6 +179,9 @@ input,select,button,textarea{font-family:var(--fb)}
 .gbar-td{padding:0;vertical-align:middle}
 .g-bar-seg{cursor:pointer;transition:filter .1s}
 .g-bar-seg:hover{filter:brightness(1.1)}
+.g-add-btn{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-size:14px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0;transition:opacity .15s;padding:0}
+.grow:hover .g-add-btn{opacity:1}
+.g-add-btn:hover{background:var(--accent-l)}
 /* LEGEND */
 .g-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:.7rem;color:var(--text3)}
 .g-legend-i{display:inline-flex;align-items:center;gap:4px}
@@ -564,10 +567,25 @@ function ImpactModal({changedTask,origEnd,impacted,onPostpone,onIgnore,onClose})
 }
 
 /* ══ GANTT CHART ════════════════════════════════════════ */
-function GanttChart({scheduled,baselineTasks,baselineEnd,completedAt,teamFilter,ganttRef,onBarClick,impactMap,onImpactClick}){
+function GanttChart({scheduled,baselineTasks,baselineEnd,completedAt,teamFilter,ganttRef,onBarClick,impactMap,onImpactClick,onAddTask,onDragAdd}){
   const cref=useRef(null);
   const[cw,setCw]=useState(700);
+  const[dragInfo,setDragInfo]=useState(null);
   useEffect(()=>{if(!cref.current)return;const ro=new ResizeObserver(e=>setCw(e[0].contentRect.width));ro.observe(cref.current);return()=>ro.disconnect();},[]);
+  useEffect(()=>{
+    if(!dragInfo||!onDragAdd)return;
+    const di=dragInfo;
+    const onUp=e=>{
+      if(Math.abs(e.clientX-di.startX)<8){setDragInfo(null);return;}
+      const endDay=Math.max(0,Math.min(di.totalDays-1,Math.floor((e.clientX-di.rectLeft)/di.DAY)));
+      const s=Math.min(di.startDay,endDay);
+      const dur=Math.max(1,Math.abs(endDay-di.startDay)+1);
+      onDragAdd({teamName:di.taskTeam,startDate:addDays(di.ps,s),duration:dur});
+      setDragInfo(null);
+    };
+    document.addEventListener('mouseup',onUp);
+    return()=>document.removeEventListener('mouseup',onUp);
+  },[dragInfo,onDragAdd]);
 
   const today=todayStr();
   const filtered=teamFilter==='all'?scheduled:scheduled.filter(t=>(t.teamName||'')===teamFilter);
@@ -608,11 +626,12 @@ function GanttChart({scheduled,baselineTasks,baselineEnd,completedAt,teamFilter,
                   <div className="gn">{task.name}</div>
                   <div className="gm">{task.teamName&&<span style={{color:'var(--accent)',marginRight:3}}>[{task.teamName.length>12?task.teamName.slice(0,12)+'…':task.teamName}]</span>}{task.durationDays}g{hasRed&&<span style={{marginLeft:4,color:'var(--red)',fontWeight:700}}>⚠</span>}{!hasRed&&hasOrange&&<span style={{marginLeft:4,color:'var(--orange)',fontWeight:700}}>~</span>}</div>
                 </div>
+                {!completedAt&&onAddTask&&<button className="g-add-btn" onClick={e=>{e.stopPropagation();onAddTask(task.teamName);}} title={`${task.teamName||'Ekip'} için yeni görev ekle`}>+</button>}
                 {hasImpact&&<button className="impact-btn" onClick={e=>{e.stopPropagation();onImpactClick&&onImpactClick(task);}} title="Bu görev uzadı/gecikmedi — etkilenebilecek görevler var">⚡</button>}
               </div>
             </td>
             <td className="gbar-td">
-              <div style={{position:'relative',width:totalW,height:32}}>
+              <div style={{position:'relative',width:totalW,height:32}} onMouseDown={e=>{if(completedAt||!onDragAdd)return;if(e.target.classList.contains('g-bar-seg'))return;const rect=e.currentTarget.getBoundingClientRect();setDragInfo({startDay:Math.max(0,Math.floor((e.clientX-rect.left)/DAY)),taskTeam:task.teamName,startX:e.clientX,rectLeft:rect.left,ps,DAY,totalDays});e.preventDefault();}}>
                 {days.map((d,i)=><div key={d} style={{position:'absolute',left:i*DAY,top:0,bottom:0,width:1,background:'rgba(227,225,216,.9)',pointerEvents:'none'}}/>)}
                 {showToday&&<div style={{position:'absolute',left:todOff*DAY+DAY/2-1,top:0,bottom:0,width:2,background:'var(--accent)',zIndex:5,boxShadow:'0 0 5px rgba(35,85,212,.4)',borderRadius:2,pointerEvents:'none'}}/>}
                 {segs.map((seg,si)=><div key={si} className="g-bar-seg" title={seg.color==='green'?'Tamamlanan':seg.color==='blue'?'Planlanan':seg.color==='orange'?'Uzama':seg.color==='gray'?'Proje tamamlandı':'Gecikme'} onClick={()=>onBarClick&&onBarClick(task)} style={{position:'absolute',left:seg.left,width:Math.max(DAY,seg.width),top:5,height:22,background:BAR[seg.color],borderRadius:si===0&&si===segs.length-1?5:si===0?'5px 0 0 5px':si===segs.length-1?'0 5px 5px 0':0,boxShadow:'0 1px 5px rgba(0,0,0,.1)',zIndex:2}}/>)}
@@ -699,8 +718,8 @@ function TasksFullModal({scheduled,baselineTasks,baselineEnd,readOnly,onEdit,onD
 }
 
 /* ══ TASK MODAL ═════════════════════════════════════════ */
-function TaskModal({initial,tasks,projectTeams,onSave,onClose,projStartDate,baselineEnd}){
-  const[f,setF]=useState(initial?{name:initial.name,teamName:initial.teamName||'',startDate:initial.startDate,durationMode:initial.durationMode||'days',durationInput:initial.durationInput||initial.durationDays||1,sprintWeeks:initial.sprintWeeks||2}:{name:'',teamName:'',startDate:todayStr(),durationMode:'days',durationInput:1,sprintWeeks:2});
+function TaskModal({initial,prefill,tasks,projectTeams,onSave,onClose,projStartDate,baselineEnd}){
+  const[f,setF]=useState(initial?{name:initial.name,teamName:initial.teamName||'',startDate:initial.startDate,durationMode:initial.durationMode||'days',durationInput:initial.durationInput||initial.durationDays||1,sprintWeeks:initial.sprintWeeks||2}:{name:'',teamName:prefill?.teamName||'',startDate:prefill?.startDate||todayStr(),durationMode:'days',durationInput:prefill?.duration||1,sprintWeeks:2});
   const set=(k,v)=>setF(p=>({...p,[k]:v}));
   const[errors,setErrors]=useState({});
   const maxSp=maxSprints(f.sprintWeeks);
@@ -736,6 +755,8 @@ function TaskModal({initial,tasks,projectTeams,onSave,onClose,projStartDate,base
 function TimelineTab({proj,updateProj}){
   const{tasks,baselineEnd,baselineTasks,projectTeams=[],completedAt}=proj;
   const[showModal,setShowModal]=useState(false);
+  const[modalPrefill,setModalPrefill]=useState(null);
+  const openAddModal=(prefill=null)=>{setModalPrefill(prefill);setShowModal(true);};
   const[editTask,setEditTask]=useState(null);
   const[showAll,setShowAll]=useState(false);
   const[tFilt,setTFilt]=useState('all');
@@ -1026,7 +1047,7 @@ function TimelineTab({proj,updateProj}){
             <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:8}}>
               <span style={{fontSize:'.78rem',color:'var(--text3)',fontFamily:'var(--fm)',flex:1}}>Görevler ({tasks.length})</span>
               <button className="btn btn-g btn-sm" onClick={()=>setShowAll(true)} title="Geniş görünüm" style={{display:tasks.length>0?'inline-flex':'none'}}>⛶</button>
-              <button className="btn btn-p btn-sm" onClick={()=>setShowModal(true)} disabled={!canAdd}>+ Ekle</button>
+              <button className="btn btn-p btn-sm" onClick={()=>openAddModal(null)} disabled={!canAdd}>+ Ekle</button>
             </div>
             {tasks.length===0?<div className="no-hint">{canAdd?'Henüz görev yok':'Önce ekip ekle'}</div>:
               <div className="task-list">{scheduled.map((t,i)=>{
@@ -1096,11 +1117,11 @@ function TimelineTab({proj,updateProj}){
             {tasks.length>0&&<span className="badge b-bl">📍 {fmt(todayStr())}</span>}
           </div>
         </div>
-        <GanttChart scheduled={scheduled} baselineTasks={baselineTasks} baselineEnd={baselineEnd} completedAt={completedAt} teamFilter={tFilt} ganttRef={ganttRef} onBarClick={t=>!completedAt&&setEditTask(t)} impactMap={impactMap} onImpactClick={task=>setImpactTask(task)}/>
+        <GanttChart scheduled={scheduled} baselineTasks={baselineTasks} baselineEnd={baselineEnd} completedAt={completedAt} teamFilter={tFilt} ganttRef={ganttRef} onBarClick={t=>!completedAt&&setEditTask(t)} impactMap={impactMap} onImpactClick={task=>setImpactTask(task)} onAddTask={!completedAt?teamName=>openAddModal({teamName}):null} onDragAdd={!completedAt?({teamName,startDate,duration})=>openAddModal({teamName,startDate,duration}):null}/>
       </div>
     </div>
 
-    {showModal&&<TaskModal tasks={tasks} projectTeams={projectTeams} projStartDate={ps} baselineEnd={baselineEnd} onSave={addTask} onClose={()=>setShowModal(false)}/>}
+    {showModal&&<TaskModal prefill={modalPrefill} tasks={tasks} projectTeams={projectTeams} projStartDate={ps} baselineEnd={baselineEnd} onSave={addTask} onClose={()=>{setShowModal(false);setModalPrefill(null);}}/>}
     {editTask&&<TaskModal initial={editTask} tasks={tasks} projectTeams={projectTeams} projStartDate={ps} baselineEnd={baselineEnd} onSave={editSave} onClose={()=>setEditTask(null)}/>}
     {showAll&&<TasksFullModal scheduled={scheduled} baselineTasks={baselineTasks} baselineEnd={baselineEnd} readOnly={!!completedAt} onEdit={t=>{setEditTask(t);setShowAll(false);}} onDelete={id=>{delTask(id);}} onClose={()=>setShowAll(false)}/>}
     {showComplete&&<CompleteProjectModal proj={proj} onSave={doComplete} onClose={()=>setShowComplete(false)}/>}
