@@ -1194,7 +1194,7 @@ function TimelineTab({proj,updateProj}){
   };
 
   const doExport=()=>{
-    const data=scheduled.map(t=>{const o=(baselineTasks||[]).find(o=>o.id===t.id);const oe=o?o.end:t.end;return{'Görev':t.name,'Ekip':t.teamName||'','Süre (g)':t.durationDays,'Başlangıç':t.start,'Bitiş':t.end,'Baseline Bitiş':o?oe:'—','Gecikme (g)':o?Math.max(0,diffDays(oe,t.end)):0,'Uzama (g)':o&&t.durationDays>o.durationDays?t.durationDays-o.durationDays:0};});
+    const data=scheduled.map(t=>{const o=(baselineTasks||[]).find(o=>o.id===t.id);const oe=o?o.end:t.end;return{'Görev':t.name,'Ekip':t.teamName||'','Destek Ekipler':(t.supportTeams||[]).join(', '),'Süre (g)':t.durationDays,'Başlangıç':t.start,'Bitiş':t.end,'Baseline Bitiş':o?oe:'—','Gecikme (g)':o?Math.max(0,diffDays(oe,t.end)):0,'Uzama (g)':o&&t.durationDays>o.durationDays?t.durationDays-o.durationDays:0};});
     const ws=XLSX.utils.json_to_sheet(data);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Gantt');XLSX.writeFile(wb,`${proj.name}_gantt.xlsx`);
   };
 
@@ -1210,6 +1210,7 @@ function TimelineTab({proj,updateProj}){
           id:uid(),
           name:String(r['Görev']),
           teamName:String(r['Ekip']||''),
+          supportTeams:String(r['Destek Ekipler']||'').split(',').map(s=>s.trim()).filter(Boolean),
           startDate:String(r['Başlangıç']).slice(0,10),
           durationDays:Math.max(1,parseInt(r['Süre (g)'])||1),
           durationInput:Math.max(1,parseInt(r['Süre (g)'])||1),
@@ -1217,8 +1218,9 @@ function TimelineTab({proj,updateProj}){
           sprintWeeks:2,
         }));
         if(newTasks.length===0){alert('Geçerli görev bulunamadı. "Görev" ve "Başlangıç" sütunlarının dolu olduğundan emin olun.');return;}
-        // Also auto-create teams from imported data
-        const teamNames=[...new Set(newTasks.map(t=>t.teamName).filter(Boolean))];
+        // Auto-create teams from primary + support teams in imported data
+        const allTeamNames=[...new Set([...newTasks.map(t=>t.teamName),...newTasks.flatMap(t=>t.supportTeams)].filter(Boolean))];
+        const teamNames=allTeamNames;
         updateProj(p=>{
           const existingTeamNames=(p.projectTeams||[]).map(t=>t.name);
           const newTeams=teamNames.filter(n=>!existingTeamNames.includes(n)).map(n=>({id:uid(),name:n,members:[]}));
