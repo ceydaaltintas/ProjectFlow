@@ -84,6 +84,7 @@ input,select,button,textarea{font-family:var(--fb)}
 /* ─ MODAL ────────────────────────────────────────────────── */
 .mbd{position:fixed;inset:0;background:rgba(15,14,10,.38);backdrop-filter:blur(6px);z-index:600;display:flex;align-items:center;justify-content:center;padding:16px;animation:fi .15s ease}
 .modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--rl);padding:24px;width:480px;max-width:100%;max-height:90vh;overflow-y:auto;box-shadow:var(--sh-lg);animation:su .2s ease}
+.modal.modal-flex{overflow:hidden;display:flex;flex-direction:column;height:min(80vh,600px)}
 .modal-sm{width:380px}.modal-lg{width:720px;max-width:96vw}
 .modal-title{font-family:var(--fd);font-weight:700;font-size:1.1rem;margin-bottom:18px}
 .fr{display:grid;gap:12px;margin-bottom:12px}.fr2{grid-template-columns:1fr 1fr}
@@ -176,16 +177,43 @@ input,select,button,textarea{font-family:var(--fb)}
 .glabel-inner{display:flex;align-items:center;gap:5px}
 .impact-btn{width:20px;height:20px;border-radius:50%;border:none;background:var(--yellow-l);color:var(--yellow);font-size:.7rem;cursor:pointer;display:grid;place-items:center;flex-shrink:0;transition:all .15s;box-shadow:0 0 0 2px rgba(146,64,14,.2)}
 .impact-btn:hover{background:var(--yellow-m);transform:scale(1.1)}
-.gbar-td{padding:0;vertical-align:middle}
+.gbar-td{padding:0;vertical-align:middle;cursor:crosshair;user-select:none}
 .g-bar-seg{cursor:pointer;transition:filter .1s}
 .g-bar-seg:hover{filter:brightness(1.1)}
-.g-add-btn{width:18px;height:18px;border-radius:50%;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-size:14px;line-height:1;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;opacity:0;transition:opacity .15s;padding:0}
-.grow:hover .g-add-btn{opacity:1}
-.g-add-btn:hover{background:var(--accent-l)}
 /* LEGEND */
 .g-legend{display:flex;gap:10px;flex-wrap:wrap;font-size:.7rem;color:var(--text3)}
 .g-legend-i{display:inline-flex;align-items:center;gap:4px}
 .g-legend-d{width:10px;height:10px;border-radius:2px;flex-shrink:0}
+/* ─ TEAM COLORS ─────────────────────────────────────────── */
+:root{
+  --tc0:#2355d4;--tc0-l:#eef2ff;--tc0-b:rgba(35,85,212,.18);
+  --tc1:#047857;--tc1-l:#ecfdf5;--tc1-b:rgba(4,120,87,.18);
+  --tc2:#7c3aed;--tc2-l:#f5f3ff;--tc2-b:rgba(124,58,237,.18);
+  --tc3:#b45309;--tc3-l:#fffbeb;--tc3-b:rgba(180,83,9,.18);
+  --tc4:#0e7490;--tc4-l:#ecfeff;--tc4-b:rgba(14,116,144,.18);
+  --tc5:#be185d;--tc5-l:#fdf2f8;--tc5-b:rgba(190,24,93,.18);
+  --tc6:#374151;--tc6-l:#f3f4f6;--tc6-b:rgba(55,65,81,.18);
+  --tc7:#9a3412;--tc7-l:#fff7ed;--tc7-b:rgba(154,52,18,.18);
+}
+.gantt-empty-day{transition:background .1s}
+.gantt-empty-day:hover{background:rgba(35,85,212,.08)}
+/* ─ GANTT TEAM GROUP ROW ─────────────────────────────────── */
+.gantt-team-hdr td{padding:4px 10px;font-size:.68rem;font-weight:700;text-transform:uppercase;letter-spacing:.07em;border-bottom:1px solid var(--border)}
+.gantt-team-hdr .glabel{padding:4px 10px}
+/* ─ SUPPORT TEAM MULTI SELECT ───────────────────────────── */
+.support-team-list{display:flex;flex-direction:column;gap:4px;max-height:130px;overflow-y:auto;margin-top:5px;padding:2px}
+.support-team-opt{display:flex;align-items:center;gap:8px;padding:5px 9px;border-radius:6px;border:1px solid var(--border);background:var(--surface2);cursor:pointer;transition:all .13s;font-size:.81rem}
+.support-team-opt:hover{border-color:var(--border2);background:var(--surface)}
+.support-team-opt.selected{border-color:var(--accent);background:var(--accent-l);color:var(--accent);font-weight:600}
+.support-team-check{width:16px;height:16px;border-radius:4px;border:1.5px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:.6rem;font-weight:700;color:#fff;transition:all .13s}
+.support-team-opt.selected .support-team-check{background:var(--accent);border-color:var(--accent)}
+.support-teams-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 6px;border-radius:4px;font-size:.63rem;font-family:var(--fm);font-weight:600;background:var(--purple-l);color:var(--purple);margin-right:3px}
+/* ─ TASK MODAL IMPROVED ──────────────────────────────────── */
+.task-modal-preview{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);padding:12px 14px;margin-bottom:10px;display:flex;flex-direction:column;gap:6px}
+.tmp-row{display:flex;align-items:center;justify-content:space-between;font-size:.8rem}
+.tmp-label{color:var(--text3);font-size:.72rem;font-family:var(--fm)}
+.tmp-value{font-weight:600;color:var(--text);font-family:var(--fm)}
+.tmp-end-ok{color:var(--green)}.tmp-end-warn{color:var(--red)}
 /* ─ TEAM PANEL ──────────────────────────────────────────── */
 .team-tag-item{background:var(--surface2);border:1px solid var(--border);border-radius:var(--r);margin-bottom:6px;overflow:hidden}
 .team-tag-item:hover{border-color:var(--border2)}
@@ -490,11 +518,10 @@ function buildSegs(task,ps,today,orig,isNew,baselineEnd,DAY,completedAt){
    startDate > task's original end date (from baseline or original).
    User can select which to postpone.
 ══════════════════════════════════════════════════════════ */
-function findImpactedTasks(changedTask,allScheduled,baselineTasks){
+function findImpactedTasks(changedTask,allScheduled,baselineTasks,origEndOverride){
   const orig=(baselineTasks||[]).find(o=>o.id===changedTask.id);
-  if(!orig)return [];
-  const origEnd=orig.end;
-  // Tasks starting AFTER the original end of the changed task
+  const origEnd=origEndOverride||orig?.end;
+  if(!origEnd)return [];
   return allScheduled.filter(t=>t.id!==changedTask.id&&t.start>origEnd);
 }
 
@@ -506,89 +533,138 @@ function findImpactedTasks(changedTask,allScheduled,baselineTasks){
    - So if origEnd=Apr30, newEnd=May5 => shift=5
      Task starting May3 => new start May3+5 = May8  ✓
 ══════════════════════════════════════════════════════════ */
-function ImpactModal({changedTask,origEnd,impacted,onPostpone,onIgnore,onClose}){
+function ImpactModal({changedTask,origEnd,impacted,projectTeams,onPostpone,onIgnore,onClose}){
   const[selected,setSelected]=useState([]);
   const toggle=id=>setSelected(s=>s.includes(id)?s.filter(x=>x!==id):[...s,id]);
-  // How many days the changed task overran vs original end
-  const shift=diffDays(origEnd,changedTask.end);
+  const shift=origEnd?diffDays(origEnd,changedTask.end):0;
 
-  return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onClose()}>
-    <div className="modal">
-      <div className="modal-title">⚡ Bağımlı Görev Analizi</div>
+  return(<div className="mbd">
+    <div className="modal modal-flex" style={{maxWidth:500,padding:0}}>
 
-      {/* Info banner */}
-      <div style={{background:'var(--yellow-l)',border:'1px solid rgba(146,64,14,.25)',borderRadius:'var(--r)',padding:'12px 14px',marginBottom:14}}>
-        <div style={{fontWeight:700,fontSize:'.88rem',color:'var(--yellow)',marginBottom:4,wordBreak:'break-all',overflowWrap:'break-word'}}>"{changedTask.name}" görevi uzadı</div>
-        <div style={{fontSize:'.8rem',color:'var(--text2)',lineHeight:1.6}}>
-          Bu görevin orijinal bitişi <strong>{fmt(origEnd)}</strong> iken güncel bitiş <strong>{fmt(changedTask.end)}</strong> oldu (<strong>+{shift} gün</strong> uzama).<br/>
-          Orijinal bitiş tarihinden sonra başlayan görevlerin etkilenme ihtimali var. Başlangıcını ötelemek istediğiniz görevleri işaretleyin.
+      {/* HEADER - fixed */}
+      <div style={{padding:'20px 20px 14px',borderBottom:'1px solid var(--border)',flexShrink:0}}>
+        <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:12}}>
+          <span style={{fontSize:'1.1rem'}}>⚡</span>
+          <span style={{fontFamily:'var(--fd)',fontWeight:700,fontSize:'1rem',flex:1}}>Bağımlı Görev Analizi</span>
+          <button onClick={onClose} style={{background:'none',border:'none',fontSize:'1.2rem',cursor:'pointer',color:'var(--text3)',lineHeight:1}}>×</button>
+        </div>
+        <div style={{background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:8,padding:'10px 12px'}}>
+          <div style={{fontWeight:700,fontSize:'.85rem',marginBottom:4,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap'}}>
+            {changedTask.name}
+            {changedTask.teamName&&<span style={{marginLeft:6,fontSize:'.72rem',fontWeight:400,color:'var(--text3)'}}>[{changedTask.teamName}]</span>}
+          </div>
+          {shift>0&&origEnd
+            ?<div style={{fontSize:'.78rem',color:'var(--text2)'}}>Orijinal bitiş <strong>{fmt(origEnd)}</strong> → yeni bitiş <strong style={{color:'var(--red)'}}>{fmt(changedTask.end)}</strong> <span style={{color:'var(--red)',fontWeight:700}}>(+{shift}g)</span></div>
+            :<div style={{fontSize:'.78rem',color:'var(--text2)'}}>Bitiş: <strong>{fmt(changedTask.end)}</strong> — sonrasında başlayan görevler etkilenebilir</div>
+          }
+        </div>
+        <div style={{marginTop:10,fontSize:'.72rem',fontWeight:700,color:'var(--text3)',textTransform:'uppercase',letterSpacing:'.05em'}}>
+          Etkilenebilecek Görevler ({impacted.length}){shift>0&&<span style={{fontWeight:400,marginLeft:4}}>— seçilenler +{shift}g ötelenir</span>}
         </div>
       </div>
 
-      {impacted.length===0
-        ?<div className="no-hint">Orijinal bitiş tarihinden sonra başlayan başka görev yok.</div>
-        :<div className="impact-list">
-          {impacted.map(t=>{
+      {/* LIST - scrollable */}
+      <div style={{overflowY:'auto',flexGrow:1,flexShrink:1,flexBasis:0,minHeight:0,padding:'10px 20px'}}>
+        {impacted.length===0
+          ?<div style={{padding:'20px 0',textAlign:'center',color:'var(--text3)',fontSize:'.85rem'}}>Sonrasında başlayan başka görev yok.</div>
+          :impacted.map(t=>{
+            const isSel=selected.includes(t.id);
             const newStart=addDays(t.start,shift);
-            const isSelected=selected.includes(t.id);
+            const tIdx=(projectTeams||[]).findIndex(p=>p.name===t.teamName);
+            const tColor=tIdx>=0?TEAM_COLORS[tIdx%TEAM_COLORS.length]:'var(--accent)';
             return(
-              <div key={t.id} className={`impact-item${isSelected?' selected':''}`} onClick={()=>toggle(t.id)}>
-                <div className="impact-item-check">{isSelected&&'✓'}</div>
-                <div className="impact-item-info">
-                  <div className="impact-item-name" style={{overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:'340px'}} title={t.name}>{t.name}</div>
-                  <div className="impact-item-meta">
-                    {t.teamName&&<span style={{color:'var(--accent)',marginRight:6,fontWeight:600}}>[{t.teamName.length>20?t.teamName.slice(0,20)+'…':t.teamName}]</span>}
-                    Mevcut başlangıç: <strong>{fmt(t.start)}</strong>
+              <div key={t.id} onClick={()=>toggle(t.id)} style={{display:'flex',alignItems:'flex-start',gap:10,padding:'10px 12px',marginBottom:6,border:`1px solid ${isSel?'var(--accent)':'var(--border)'}`,borderLeft:`3px solid ${isSel?'var(--accent)':'var(--border)'}`,borderRadius:8,background:isSel?'var(--accent-l)':'var(--surface2)',cursor:'pointer',transition:'all .12s'}}>
+                <div style={{width:16,height:16,borderRadius:4,border:`1.5px solid ${isSel?'var(--accent)':'var(--border2)'}`,background:isSel?'var(--accent)':'transparent',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,marginTop:2,color:'#fff',fontSize:'.65rem',fontWeight:700}}>{isSel&&'✓'}</div>
+                <div style={{flex:1,minWidth:0}}>
+                  <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:2}}>
+                    <span style={{fontWeight:600,fontSize:'.82rem',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',flex:1}}>{t.name}</span>
+                    {t.teamName&&<span style={{fontSize:'.65rem',color:tColor,fontWeight:700,flexShrink:0}}>[{t.teamName.length>14?t.teamName.slice(0,14)+'…':t.teamName}]</span>}
                   </div>
-                  {isSelected&&<div style={{fontSize:'.72rem',marginTop:4,color:'var(--green)',fontFamily:'var(--fm)',fontWeight:600}}>
-                    → Yeni başlangıç: {fmt(newStart)} (+{shift}g ötelenir)
-                  </div>}
+                  <div style={{fontSize:'.75rem',color:'var(--text2)'}}>
+                    Başlangıç: <strong>{fmt(t.start)}</strong>
+                    {isSel&&shift>0&&<span style={{color:'var(--accent)',fontWeight:700,marginLeft:8}}>→ {fmt(newStart)} (+{shift}g)</span>}
+                  </div>
                 </div>
               </div>
             );
-          })}
+          })
+        }
+      </div>
+
+      {/* FOOTER - fixed */}
+      <div style={{borderTop:'1px solid var(--border)',padding:'12px 20px',flexShrink:0}}>
+        {impacted.length>1&&<div style={{display:'flex',gap:6,marginBottom:10}}>
+          <button className="btn btn-g btn-sm" onClick={()=>setSelected(impacted.map(t=>t.id))}>Tümünü Seç</button>
+          <button className="btn btn-g btn-sm" onClick={()=>setSelected([])}>Temizle</button>
+        </div>}
+        <div style={{display:'flex',gap:8,justifyContent:'flex-end'}}>
+          <button className="btn btn-g" onClick={onIgnore}>Yoksay</button>
+          <button className="btn btn-p" onClick={()=>onPostpone(selected)} disabled={selected.length===0}>
+            {selected.length>0?`${selected.length} Görevi Ötele (+${shift}g)`:'Ötele'}
+          </button>
         </div>
-      }
-
-      {/* Select all shortcut */}
-      {impacted.length>1&&<div style={{display:'flex',gap:8,marginTop:8,marginBottom:4}}>
-        <button className="btn btn-g btn-sm" onClick={()=>setSelected(impacted.map(t=>t.id))}>Tümünü Seç</button>
-        <button className="btn btn-g btn-sm" onClick={()=>setSelected([])}>Seçimi Temizle</button>
-      </div>}
-
-      <div className="form-foot">
-        <button className="btn btn-g" onClick={onIgnore} title="Bu görevi bir daha gösterme">Yoksay</button>
-        <button className="btn btn-p" onClick={()=>onPostpone(selected)} disabled={selected.length===0}>
-          {selected.length>0?`${selected.length} Görevi Ötele (+${shift}g)`:'Ötele'}
-        </button>
       </div>
     </div>
   </div>);
 }
 
+/* ══ TEAM COLOR HELPERS ══════════════════════════════════ */
+const TEAM_COLORS=['#2355d4','#047857','#7c3aed','#b45309','#0e7490','#be185d','#374151','#9a3412'];
+const TEAM_COLORS_L=['#eef2ff','#ecfdf5','#f5f3ff','#fffbeb','#ecfeff','#fdf2f8','#f3f4f6','#fff7ed'];
+const TEAM_COLORS_BG=['rgba(35,85,212,.07)','rgba(4,120,87,.07)','rgba(124,58,237,.07)','rgba(180,83,9,.07)','rgba(14,116,144,.07)','rgba(190,24,93,.07)','rgba(55,65,81,.07)','rgba(154,52,18,.07)'];
+function teamColorIdx(teamName,projectTeams){const idx=(projectTeams||[]).findIndex(t=>t.name===teamName);return idx>=0?idx%TEAM_COLORS.length:6;}
+
 /* ══ GANTT CHART ════════════════════════════════════════ */
-function GanttChart({scheduled,baselineTasks,baselineEnd,completedAt,teamFilter,ganttRef,onBarClick,impactMap,onImpactClick,onAddTask,onDragAdd}){
+function GanttChart({scheduled,baselineTasks,baselineEnd,completedAt,teamFilter,ganttRef,onBarClick,impactMap,onImpactClick,projectTeams,onDragSelect,onTeamAddClick,sortByDate,onBarResize}){
   const cref=useRef(null);
   const[cw,setCw]=useState(700);
-  const[dragInfo,setDragInfo]=useState(null);
-  useEffect(()=>{if(!cref.current)return;const ro=new ResizeObserver(e=>setCw(e[0].contentRect.width));ro.observe(cref.current);return()=>ro.disconnect();},[]);
+  const dragRef=useRef(null);
+  const[dragVis,setDragVis]=useState(null);
+
   useEffect(()=>{
-    if(!dragInfo||!onDragAdd)return;
-    const di=dragInfo;
+    if(!cref.current)return;
+    const ro=new ResizeObserver(e=>setCw(e[0].contentRect.width));
+    ro.observe(cref.current);
+    return()=>ro.disconnect();
+  },[]);
+
+  // Global mouseup — resolves drag anywhere, even if mouse left the element
+  useEffect(()=>{
     const onUp=e=>{
-      if(Math.abs(e.clientX-di.startX)<8){setDragInfo(null);return;}
-      const endDay=Math.max(0,Math.min(di.totalDays-1,Math.floor((e.clientX-di.rectLeft)/di.DAY)));
-      const s=Math.min(di.startDay,endDay);
-      const dur=Math.max(1,Math.abs(endDay-di.startDay)+1);
-      onDragAdd({teamName:di.taskTeam,startDate:addDays(di.ps,s),duration:dur});
-      setDragInfo(null);
+      const d=dragRef.current;
+      if(!d)return;
+      dragRef.current=null;
+      setDragVis(null);
+      const moved=Math.abs(e.clientX-d.startX)>4;
+      if(moved&&d.onDragSelectFn){
+        const s=Math.min(d.startDay,d.endDay),en=Math.max(d.startDay,d.endDay);
+        d.onDragSelectFn({startDate:d.days[s],durationDays:en-s+1,teamName:d.teamName});
+      }
+    };
+    const onMove=e=>{
+      if(!dragRef.current)return;
+      const rows=cref.current?.querySelectorAll('div[data-dragtarget]');
+      if(!rows)return;
+      rows.forEach(div=>{
+        const rect=div.getBoundingClientRect();
+        if(e.clientX>=rect.left&&e.clientX<=rect.right&&e.clientY>=rect.top&&e.clientY<=rect.bottom){
+          const DAY=dragRef.current.DAY;
+          const dayIdx=Math.max(0,Math.min(dragRef.current.days.length-1,Math.floor((e.clientX-rect.left)/DAY)));
+          dragRef.current={...dragRef.current,endDay:dayIdx};
+          setDragVis({...dragRef.current});
+        }
+      });
     };
     document.addEventListener('mouseup',onUp);
-    return()=>document.removeEventListener('mouseup',onUp);
-  },[dragInfo,onDragAdd]);
+    document.addEventListener('mousemove',onMove);
+    return()=>{document.removeEventListener('mouseup',onUp);document.removeEventListener('mousemove',onMove);};
+  },[]);
 
   const today=todayStr();
-  const filtered=teamFilter==='all'?scheduled:scheduled.filter(t=>(t.teamName||'')===teamFilter);
+  // Filter: ana ekip VEYA destek ekip olarak dahil olanlar
+  const filtered=teamFilter==='all'
+    ?scheduled
+    :scheduled.filter(t=>(t.teamName||'')===teamFilter||(t.supportTeams||[]).includes(teamFilter));
   if(!filtered.length)return<div ref={el=>{cref.current=el;if(ganttRef)ganttRef.current=el;}} style={{padding:40,textAlign:'center',color:'var(--text3)'}}><div style={{fontSize:'1.8rem',marginBottom:8}}>📅</div><div style={{fontFamily:'var(--fd)',fontWeight:600,color:'var(--text2)'}}>Görev yok</div></div>;
   const ps=pStart(filtered),pe=pEnd(filtered);
   const bPe=baselineTasks?pEnd(baselineTasks.filter(t=>filtered.some(f=>f.id===t.id))):null;
@@ -602,7 +678,26 @@ function GanttChart({scheduled,baselineTasks,baselineEnd,completedAt,teamFilter,
   const todOff=diffDays(ps,today);
   const showToday=!completedAt&&todOff>=0&&todOff<totalDays;
 
-  return(<div ref={el=>{cref.current=el;if(ganttRef)ganttRef.current=el;}} style={{overflowX:'auto'}}>
+  // Group tasks: by team (sorted by date within group) or flat by date
+  const grouped=[];
+  if(sortByDate){
+    grouped.push({teamName:null,tasks:[...filtered].sort((a,b)=>a.start.localeCompare(b.start)),flat:true});
+  } else {
+    const teamOrder=(projectTeams||[]).map(t=>t.name);
+    const seen=new Set();
+    teamOrder.forEach(tname=>{
+      const tTasks=filtered.filter(t=>t.teamName===tname).sort((a,b)=>a.start.localeCompare(b.start));
+      if(tTasks.length>0){grouped.push({teamName:tname,tasks:tTasks});seen.add(tname);}
+    });
+    const rest=filtered.filter(t=>!seen.has(t.teamName)).sort((a,b)=>a.start.localeCompare(b.start));
+    if(rest.length>0)grouped.push({teamName:rest[0].teamName||'',tasks:rest});
+  }
+  const showGroupHeaders=!sortByDate;
+
+  return(<div ref={el=>{cref.current=el;if(ganttRef)ganttRef.current=el;}} style={{overflowX:'auto'}}
+    onMouseMove={e=>{}}
+    onMouseLeave={()=>{}}
+  >
     <table className="gtable" style={{width:labelW+totalW}}>
       <colgroup><col style={{width:labelW}}/><col style={{width:totalW}}/></colgroup>
       <thead>
@@ -611,33 +706,103 @@ function GanttChart({scheduled,baselineTasks,baselineEnd,completedAt,teamFilter,
         </div></th></tr>
       </thead>
       <tbody>
-        {filtered.map(task=>{
-          const orig=(baselineTasks||[]).find(o=>o.id===task.id);
-          const isNew=!!baselineEnd&&!orig;
-          const segs=buildSegs(task,ps,today,orig||null,isNew,baselineEnd,DAY,completedAt);
-          const hasRed=segs.some(s=>s.color==='red');
-          const hasOrange=segs.some(s=>s.color==='orange');
-          const tip=`${task.name}${task.teamName?' ['+task.teamName+']':''} · ${fmt(task.start)}–${fmt(task.end)} (${task.durationDays}g)${hasRed?' ⚠ Gecikme':hasOrange?' ~ Uzama':''}`;
-          const hasImpact=!!(impactMap&&impactMap[task.id]&&impactMap[task.id].length>0);
-          return(<tr key={task.id} className="grow">
-            <td className="glabel" title={tip}>
-              <div className="glabel-inner">
-                <div style={{flex:1,minWidth:0}}>
-                  <div className="gn">{task.name}</div>
-                  <div className="gm">{task.teamName&&<span style={{color:'var(--accent)',marginRight:3}}>[{task.teamName.length>12?task.teamName.slice(0,12)+'…':task.teamName}]</span>}{task.durationDays}g{hasRed&&<span style={{marginLeft:4,color:'var(--red)',fontWeight:700}}>⚠</span>}{!hasRed&&hasOrange&&<span style={{marginLeft:4,color:'var(--orange)',fontWeight:700}}>~</span>}</div>
+        {grouped.map(({teamName,tasks:gTasks})=>{
+          const tIdx=teamColorIdx(teamName,projectTeams);
+          const tColor=TEAM_COLORS[tIdx];
+          const tBg=TEAM_COLORS_BG[tIdx];
+          const tLt=TEAM_COLORS_L[tIdx];
+          return(<React.Fragment key={teamName||'__no_team'}>
+            {showGroupHeaders&&<tr className="gantt-team-hdr">
+              <td className="glabel" style={{background:tLt,borderLeft:`3px solid ${tColor}`,padding:'5px 10px'}}>
+                <div style={{display:'flex',alignItems:'center',gap:6}}>
+                  <div style={{width:8,height:8,borderRadius:'50%',background:tColor,flexShrink:0}}/>
+                  <span style={{fontWeight:700,fontSize:'.72rem',color:tColor,textTransform:'uppercase',letterSpacing:'.06em',overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',flex:1}}>{teamName||'Ekipsiz'}</span>
+                  <span style={{fontSize:'.66rem',color:tColor,opacity:.7,fontFamily:'var(--fm)',flexShrink:0}}>{gTasks.length} görev</span>
+                  {onTeamAddClick&&!completedAt&&<button onClick={e=>{e.stopPropagation();onTeamAddClick(teamName);}} style={{marginLeft:4,width:18,height:18,borderRadius:4,border:`1px solid ${tColor}`,background:'transparent',color:tColor,fontSize:'.75rem',cursor:'pointer',display:'flex',alignItems:'center',justifyContent:'center',flexShrink:0,lineHeight:1}} title={`${teamName} ekibine görev ekle`}>+</button>}
                 </div>
-                {!completedAt&&onAddTask&&<button className="g-add-btn" onClick={e=>{e.stopPropagation();onAddTask(task.teamName);}} title={`${task.teamName||'Ekip'} için yeni görev ekle`}>+</button>}
-                {hasImpact&&<button className="impact-btn" onClick={e=>{e.stopPropagation();onImpactClick&&onImpactClick(task);}} title="Bu görev uzadı/gecikmedi — etkilenebilecek görevler var">⚡</button>}
-              </div>
-            </td>
-            <td className="gbar-td">
-              <div style={{position:'relative',width:totalW,height:32}} onMouseDown={e=>{if(completedAt||!onDragAdd)return;if(e.target.classList.contains('g-bar-seg'))return;const rect=e.currentTarget.getBoundingClientRect();setDragInfo({startDay:Math.max(0,Math.floor((e.clientX-rect.left)/DAY)),taskTeam:task.teamName,startX:e.clientX,rectLeft:rect.left,ps,DAY,totalDays});e.preventDefault();}}>
-                {days.map((d,i)=><div key={d} style={{position:'absolute',left:i*DAY,top:0,bottom:0,width:1,background:'rgba(227,225,216,.9)',pointerEvents:'none'}}/>)}
-                {showToday&&<div style={{position:'absolute',left:todOff*DAY+DAY/2-1,top:0,bottom:0,width:2,background:'var(--accent)',zIndex:5,boxShadow:'0 0 5px rgba(35,85,212,.4)',borderRadius:2,pointerEvents:'none'}}/>}
-                {segs.map((seg,si)=><div key={si} className="g-bar-seg" title={seg.color==='green'?'Tamamlanan':seg.color==='blue'?'Planlanan':seg.color==='orange'?'Uzama':seg.color==='gray'?'Proje tamamlandı':'Gecikme'} onClick={()=>onBarClick&&onBarClick(task)} style={{position:'absolute',left:seg.left,width:Math.max(DAY,seg.width),top:5,height:22,background:BAR[seg.color],borderRadius:si===0&&si===segs.length-1?5:si===0?'5px 0 0 5px':si===segs.length-1?'0 5px 5px 0':0,boxShadow:'0 1px 5px rgba(0,0,0,.1)',zIndex:2}}/>)}
-              </div>
-            </td>
-          </tr>);
+              </td>
+              <td style={{background:tLt,borderLeft:'none'}}>
+                <div style={{width:totalW,height:'100%',background:`repeating-linear-gradient(90deg,${tBg} 0,${tBg} 1px,transparent 1px,transparent ${DAY}px)`}}/>
+              </td>
+            </tr>}
+            {gTasks.map(task=>{
+              const orig=(baselineTasks||[]).find(o=>o.id===task.id);
+              const isNew=!!baselineEnd&&!orig;
+              const segs=buildSegs(task,ps,today,orig||null,isNew,baselineEnd,DAY,completedAt);
+              const hasRed=segs.some(s=>s.color==='red');
+              const hasOrange=segs.some(s=>s.color==='orange');
+              const tip=`${task.name}${task.teamName?' ['+task.teamName+']':''}\n${fmt(task.start)} – ${fmt(task.end)} (${task.durationDays}g)${(task.supportTeams||[]).length>0?'\nDestek: '+(task.supportTeams||[]).join(', '):''}${hasRed?' ⚠ Gecikme':hasOrange?' ~ Uzama':''}`;
+              const hasImpact=!!(impactMap&&impactMap[task.id]&&impactMap[task.id].length>0);
+              // Row background tint for team grouping
+              const rowBg=showGroupHeaders?`${tBg}`:undefined;
+              return(<tr key={task.id} className="grow">
+                <td className="glabel" title={tip} style={rowBg?{background:rowBg,borderLeft:`3px solid ${tColor}`}:{borderLeft:'3px solid transparent'}}>
+                  <div className="glabel-inner">
+                    <div style={{flex:1,minWidth:0}}>
+                      <div className="gn">{task.name}</div>
+                      <div className="gm">
+                        {task.teamName&&<span style={{color:tColor,marginRight:3,fontWeight:600}}>[{task.teamName.length>12?task.teamName.slice(0,12)+'…':task.teamName}]</span>}
+                        {task.durationDays}g
+                        {hasRed&&<span style={{marginLeft:4,color:'var(--red)',fontWeight:700}}>⚠</span>}
+                        {!hasRed&&hasOrange&&<span style={{marginLeft:4,color:'var(--orange)',fontWeight:700}}>~</span>}
+                      </div>
+                      {(task.supportTeams||[]).length>0&&<div style={{fontSize:'.6rem',color:'var(--purple)',fontFamily:'var(--fm)',marginTop:1,lineHeight:1.3,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',maxWidth:160}}>
+                        🤝 {(task.supportTeams||[]).join(', ')}
+                      </div>}
+                    </div>
+                    {hasImpact&&<button className="impact-btn" onClick={e=>{e.stopPropagation();onImpactClick&&onImpactClick(task);}} title="Bu görev uzadı/gecikmedi — etkilenebilecek görevler var">⚡</button>}
+                  </div>
+                </td>
+                <td className="gbar-td" style={rowBg?{background:rowBg}:{}}>
+                  <div data-dragtarget="1" style={{position:'relative',width:totalW,height:32}}
+                    onMouseDown={e=>{
+                      if(completedAt||e.target.closest('.g-bar-seg'))return;
+                      if(!onDragSelect)return;
+                      const rect=e.currentTarget.getBoundingClientRect();
+                      const dayIdx=Math.max(0,Math.floor((e.clientX-rect.left)/DAY));
+                      dragRef.current={startDay:dayIdx,endDay:dayIdx,taskId:task.id,teamName:task.teamName,startX:e.clientX,DAY,days,onDragSelectFn:onDragSelect};
+                      setDragVis({...dragRef.current});
+                    }}
+                  >
+                    {days.map((d,i)=><div key={d} style={{position:'absolute',left:i*DAY,top:0,bottom:0,width:1,background:'rgba(227,225,216,.9)',pointerEvents:'none'}}/>)}
+                    {showToday&&<div style={{position:'absolute',left:todOff*DAY+DAY/2-1,top:0,bottom:0,width:2,background:'var(--accent)',zIndex:5,boxShadow:'0 0 5px rgba(35,85,212,.4)',borderRadius:2,pointerEvents:'none'}}/>}
+                    {dragVis&&dragVis.taskId===task.id&&!dragVis.onBar&&<div style={{position:'absolute',left:Math.min(dragVis.startDay,dragVis.endDay)*DAY,width:(Math.abs(dragVis.endDay-dragVis.startDay)+1)*DAY,top:2,height:28,background:'rgba(35,85,212,.18)',border:'2px solid var(--accent)',borderRadius:4,zIndex:6,pointerEvents:'none'}}/>}
+                    {segs.map((seg,si)=>{
+                      const isLast=si===segs.length-1;
+                      return(<div key={si} className="g-bar-seg" title={tip}
+                        onMouseDown={e=>e.stopPropagation()}
+                        onClick={()=>!completedAt&&onBarClick&&onBarClick(task)}
+                        style={{position:'absolute',left:seg.left,width:Math.max(DAY,seg.width),top:5,height:22,background:BAR[seg.color],borderRadius:si===0&&isLast?5:si===0?'5px 0 0 5px':isLast?'0 5px 5px 0':0,boxShadow:'0 1px 5px rgba(0,0,0,.1)',zIndex:2,pointerEvents:'auto',cursor:'pointer'}}>
+                        {isLast&&onBarResize&&!completedAt&&<div
+                          style={{position:'absolute',right:0,top:0,bottom:0,width:8,cursor:'ew-resize',background:'rgba(255,255,255,.3)',borderRadius:'0 5px 5px 0',zIndex:3,pointerEvents:'all'}}
+                          onMouseDown={e=>{
+                            e.stopPropagation();
+                            const startX=e.clientX;
+                            const origDays=task.durationDays;
+                            const onMove=ev=>{
+                              const dx=ev.clientX-startX;
+                              const newDays=Math.max(1,origDays+Math.round(dx/DAY));
+                              onBarResize(task,newDays);
+                            };
+                            const onUp=ev=>{
+                              const dx=ev.clientX-startX;
+                              const newDays=Math.max(1,origDays+Math.round(dx/DAY));
+                              if(newDays!==origDays)onBarResize(task,newDays,true);
+                              document.removeEventListener('mousemove',onMove);
+                              document.removeEventListener('mouseup',onUp);
+                            };
+                            document.addEventListener('mousemove',onMove);
+                            document.addEventListener('mouseup',onUp);
+                          }}
+                          title="Sürükleyerek süreyi değiştir"
+                        />}
+                      </div>);
+                    })}
+                  </div>
+                </td>
+              </tr>);
+            })}
+          </React.Fragment>);
         })}
       </tbody>
     </table>
@@ -646,7 +811,7 @@ function GanttChart({scheduled,baselineTasks,baselineEnd,completedAt,teamFilter,
 
 /* ══ CONFIRM MODAL ══════════════════════════════════════ */
 function ConfirmModal({title,message,onConfirm,onCancel}){
-  return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onCancel()}><div className="modal modal-sm"><div className="modal-title">{title}</div><p style={{fontSize:'.85rem',color:'var(--text2)',lineHeight:1.55}}>{message}</p><div style={{display:'flex',gap:8,justifyContent:'flex-end',marginTop:20}}><button className="btn btn-g" onClick={onCancel}>Vazgeç</button><button className="btn btn-rd" onClick={onConfirm}>Evet, Sil</button></div></div></div>);
+  return(<div className="mbd"><div className="modal modal-sm"><div className="modal-title">{title}</div><p style={{fontSize:'.85rem',color:'var(--text2)',lineHeight:1.55}}>{message}</p><div style={{display:'flex',gap:8,justifyContent:'flex-end',marginTop:20}}><button className="btn btn-g" onClick={onCancel}>Vazgeç</button><button className="btn btn-rd" onClick={onConfirm}>Evet, Sil</button></div></div></div>);
 }
 
 function CompleteProjectModal({proj,onSave,onClose}){
@@ -658,7 +823,7 @@ function CompleteProjectModal({proj,onSave,onClose}){
   const[date,setDate]=useState(todayStr());
   const isEarly=reference&&date<reference;
   const isLate=reference&&date>reference;
-  return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onClose()}><div className="modal modal-sm">
+  return(<div className="mbd"><div className="modal modal-sm">
     <div className="modal-title">🏁 Projeyi Sonlandır</div>
     <div className="fr"><div><label className="lbl">Gerçek Bitiş Tarihi</label><input className="inp" type="date" value={date} onChange={e=>setDate(e.target.value)}/></div></div>
     {reference&&<div style={{background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:'var(--r)',padding:'9px 12px',marginBottom:10,fontSize:'.8rem',fontFamily:'var(--fm)',display:'flex',flexDirection:'column',gap:5}}>
@@ -672,8 +837,8 @@ function CompleteProjectModal({proj,onSave,onClose}){
 }
 
 /* ══ TASKS FULL MODAL (view + optional edit) ════════════ */
-function TasksFullModal({scheduled,baselineTasks,baselineEnd,readOnly,onEdit,onDelete,onClose}){
-  return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onClose()}>
+function TasksFullModal({scheduled,baselineTasks,baselineEnd,readOnly,onEdit,onDelete,onDuplicate,onClose}){
+  return(<div className="mbd">
     <div className="modal modal-lg">
       <div style={{display:'flex',alignItems:'center',marginBottom:18,gap:10}}>
         <span className="modal-title" style={{marginBottom:0,flex:1}}>
@@ -697,6 +862,7 @@ function TasksFullModal({scheduled,baselineTasks,baselineEnd,readOnly,onEdit,onD
                 <div style={{fontWeight:700,fontSize:'.88rem',wordBreak:'break-word'}}>{t.name}</div>
                 <div style={{fontSize:'.75rem',color:'var(--text2)',fontFamily:'var(--fm)',marginTop:3}}>
                   {t.teamName&&<span style={{color:'var(--accent)',marginRight:6}}>[{t.teamName}]</span>}
+                  {(t.supportTeams||[]).length>0&&<span style={{color:'var(--purple)',marginRight:6,fontSize:'.7rem'}}>🤝 {(t.supportTeams||[]).join(', ')}</span>}
                   {t.durationDays}g · {fmt(t.start)} → {fmt(t.end)}
                 </div>
                 <div style={{display:'flex',gap:5,flexWrap:'wrap',marginTop:4}}>
@@ -706,6 +872,7 @@ function TasksFullModal({scheduled,baselineTasks,baselineEnd,readOnly,onEdit,onD
                 </div>
               </div>
               {!readOnly&&<div style={{display:'flex',gap:4,flexShrink:0}}>
+                <button className="ibtn b" onClick={()=>onDuplicate&&onDuplicate(t)} title="Kopyala">⧉</button>
                 <button className="ibtn b" onClick={()=>{onEdit(t);}} title="Düzenle">✏️</button>
                 <button className="ibtn r" onClick={()=>onDelete(t.id)} title="Sil">🗑</button>
               </div>}
@@ -718,13 +885,37 @@ function TasksFullModal({scheduled,baselineTasks,baselineEnd,readOnly,onEdit,onD
 }
 
 /* ══ TASK MODAL ═════════════════════════════════════════ */
-function TaskModal({initial,prefill,tasks,projectTeams,onSave,onClose,projStartDate,baselineEnd}){
-  const[f,setF]=useState(initial?{name:initial.name,teamName:initial.teamName||'',startDate:initial.startDate,durationMode:initial.durationMode||'days',durationInput:initial.durationInput||initial.durationDays||1,sprintWeeks:initial.sprintWeeks||2}:{name:'',teamName:prefill?.teamName||'',startDate:prefill?.startDate||todayStr(),durationMode:'days',durationInput:prefill?.duration||1,sprintWeeks:2});
+function TaskModal({initial,isDuplicate,prefill,tasks,projectTeams,onSave,onClose,projStartDate,baselineEnd}){
+  const[f,setF]=useState(initial?{
+    name:initial.name,
+    teamName:initial.teamName||'',
+    supportTeams:initial.supportTeams||[],
+    startDate:initial.startDate,
+    durationMode:initial.durationMode||'days',
+    durationInput:initial.durationInput||initial.durationDays||1,
+    sprintWeeks:initial.sprintWeeks||2
+  }:{name:'',teamName:prefill?.teamName||'',supportTeams:[],startDate:prefill?.startDate||todayStr(),durationMode:'days',durationInput:prefill?.durationInput||prefill?.durationDays||1,sprintWeeks:2});
   const set=(k,v)=>setF(p=>({...p,[k]:v}));
   const[errors,setErrors]=useState({});
+  const[showSupportPicker,setShowSupportPicker]=useState(!!(initial&&initial.supportTeams&&initial.supportTeams.length>0));
   const maxSp=maxSprints(f.sprintWeeks);
   const durationDays=toDays(f.durationInput,f.durationMode,f.sprintWeeks);
   const endDate=f.startDate&&durationDays>=1?addDays(f.startDate,durationDays-1):null;
+  const isLateEnd=endDate&&baselineEnd&&endDate>baselineEnd;
+
+  // Support teams: exclude selected primary team
+  const supportOptions=projectTeams.filter(t=>t.name!==f.teamName);
+  const toggleSupport=name=>{
+    const cur=f.supportTeams||[];
+    set('supportTeams',cur.includes(name)?cur.filter(n=>n!==name):[...cur,name]);
+  };
+  // Clear support teams that conflict with newly chosen primary team
+  const setPrimaryTeam=name=>{
+    set('teamName',name);
+    set('supportTeams',(f.supportTeams||[]).filter(n=>n!==name));
+    setErrors(p=>({...p,teamName:null}));
+  };
+
   const submit=()=>{
     const errs={};
     if(!f.name.trim())errs.name='Görev adı zorunlu';
@@ -732,32 +923,122 @@ function TaskModal({initial,prefill,tasks,projectTeams,onSave,onClose,projStartD
     if(!f.startDate)errs.startDate='Tarih zorunlu';
     if(projStartDate&&f.startDate<projStartDate)errs.startDate=`Proje başlangıcından (${fmt(projStartDate)}) önce olamaz`;
     if(Object.keys(errs).length){setErrors(errs);return;}
-    onSave({...f,durationDays,durationInput:f.durationMode==='sprints'?clampSprints(f.durationInput,f.sprintWeeks):clampDays(f.durationInput)});
+    onSave({...f,durationDays,supportTeams:f.supportTeams||[],durationInput:f.durationMode==='sprints'?clampSprints(f.durationInput,f.sprintWeeks):clampDays(f.durationInput)});
   };
   const handleDurChange=v=>set('durationInput',v===''?'':parseInt(v)||'');
   const handleDurBlur=()=>{if(f.durationMode==='sprints')set('durationInput',clampSprints(f.durationInput||1,f.sprintWeeks));else set('durationInput',clampDays(f.durationInput||1));};
-  return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onClose()}><div className="modal">
-    <div className="modal-title">{initial?'Görevi Düzenle':'Yeni Görev Ekle'}</div>
-    <div className="fr"><div><label className="lbl">Görev Adı *</label><input className="inp" placeholder="Örn: UI Tasarımı" value={f.name} onChange={e=>{set('name',e.target.value);setErrors(p=>({...p,name:null}));}} autoFocus/>{errors.name&&<div style={{fontSize:'.72rem',color:'var(--red)',marginTop:3}}>{errors.name}</div>}</div></div>
-    <div className="fr"><div><label className="lbl">Ekip *</label><select className="sel" value={f.teamName} onChange={e=>{set('teamName',e.target.value);setErrors(p=>({...p,teamName:null}));}}><option value="">— Ekip Seç —</option>{projectTeams.map(t=><option key={t.id} value={t.name} title={t.name}>{t.name.length>36?t.name.slice(0,36)+'…':t.name}</option>)}</select>{errors.teamName&&<div style={{fontSize:'.72rem',color:'var(--red)',marginTop:3}}>{errors.teamName}</div>}</div></div>
-    <div className="fr"><div><label className="lbl">Başlangıç Tarihi *{projStartDate&&` (min: ${fmt(projStartDate)})`}</label><input className="inp" type="date" value={f.startDate} min={projStartDate||''} onChange={e=>{set('startDate',e.target.value);setErrors(p=>({...p,startDate:null}));}}/>{errors.startDate&&<div style={{fontSize:'.72rem',color:'var(--red)',marginTop:3}}>{errors.startDate}</div>}</div></div>
-    <div className="fr"><div><label className="lbl">Süre Türü</label><div className="seg-ctrl"><button type="button" className={`seg-btn${f.durationMode==='days'?' on':''}`} onClick={()=>{set('durationMode','days');set('durationInput',1);}}>📅 Gün</button><button type="button" className={`seg-btn${f.durationMode==='sprints'?' on':''}`} onClick={()=>{set('durationMode','sprints');set('durationInput',1);}}>🔄 Sprint</button></div></div></div>
-    <div className={`fr${f.durationMode==='sprints'?' fr2':''}`}>
-      <div><label className="lbl">{f.durationMode==='sprints'?`Sprint (1–${maxSp})`:`Süre (1–${MAX_DAYS}g)`}</label><input className="inp" type="number" min="1" max={f.durationMode==='sprints'?maxSp:MAX_DAYS} value={f.durationInput} onChange={e=>handleDurChange(e.target.value)} onBlur={handleDurBlur}/></div>
-      {f.durationMode==='sprints'&&<div><label className="lbl">Sprint Uzunluğu</label><select className="sel" value={f.sprintWeeks} onChange={e=>{const sw=parseInt(e.target.value);set('sprintWeeks',sw);set('durationInput',1);}}><option value={1}>1 hafta</option><option value={2}>2 hafta</option><option value={3}>3 hafta</option><option value={4}>4 hafta</option></select></div>}
+
+  return(<div className="mbd"><div className="modal">
+    <div className="modal-title" style={{display:'flex',alignItems:'center',gap:8}}>
+      <span style={{fontSize:'1rem',opacity:.6}}>{isDuplicate?'⧉':initial?'✏️':'➕'}</span>
+      {isDuplicate?'Görevi Kopyala':initial?'Görevi Düzenle':'Yeni Görev Ekle'}
     </div>
-    {endDate&&<div style={{background:'var(--surface2)',border:'1px solid var(--border)',borderRadius:'var(--r)',padding:'9px 12px',marginBottom:10,fontSize:'.8rem',color:'var(--text2)',fontFamily:'var(--fm)',display:'flex',gap:14,flexWrap:'wrap'}}><span>📅 Bitiş: <strong style={{color:'var(--text)'}}>{fmt(endDate)}</strong></span><span>{durationDays}g</span></div>}
-    <div className="form-foot"><button className="btn btn-g" onClick={onClose}>İptal</button><button className="btn btn-p" onClick={submit}>{initial?'Güncelle':'Ekle'}</button></div>
+
+    {/* Görev Adı */}
+    <div className="fr"><div>
+      <label className="lbl">Görev Adı *</label>
+      <input className="inp" placeholder="Örn: UI Tasarımı" value={f.name}
+        onChange={e=>{set('name',e.target.value);setErrors(p=>({...p,name:null}));}} autoFocus/>
+      {errors.name&&<div style={{fontSize:'.72rem',color:'var(--red)',marginTop:3}}>{errors.name}</div>}
+    </div></div>
+
+    {/* Ana Ekip */}
+    <div className="fr"><div>
+      <label className="lbl">Ana Ekip *</label>
+      <select className="sel" value={f.teamName} onChange={e=>setPrimaryTeam(e.target.value)}>
+        <option value="">— Ekip Seç —</option>
+        {projectTeams.map(t=><option key={t.id} value={t.name} title={t.name}>{t.name.length>36?t.name.slice(0,36)+'…':t.name}</option>)}
+      </select>
+      {errors.teamName&&<div style={{fontSize:'.72rem',color:'var(--red)',marginTop:3}}>{errors.teamName}</div>}
+    </div></div>
+
+    {/* Destek Ekipler */}
+    {projectTeams.length>1&&<div className="fr"><div>
+      <div style={{display:'flex',alignItems:'center',gap:6,marginBottom:4}}>
+        <label className="lbl" style={{margin:0,flex:1}}>Destek Ekipler <span style={{color:'var(--text3)',fontWeight:400}}>(opsiyonel)</span></label>
+        <button type="button" style={{fontSize:'.72rem',color:'var(--accent)',background:'none',border:'none',cursor:'pointer',padding:'2px 4px',fontWeight:600}} onClick={()=>setShowSupportPicker(v=>!v)}>
+          {showSupportPicker?'▲ Gizle':'▼ Ekip Seç'}
+        </button>
+      </div>
+      {/* Selected support team badges */}
+      {(f.supportTeams||[]).length>0&&<div style={{display:'flex',flexWrap:'wrap',gap:5,marginBottom:5}}>
+        {(f.supportTeams||[]).map(n=><span key={n} className="support-teams-badge" onClick={()=>toggleSupport(n)} style={{cursor:'pointer'}} title="Kaldır">🤝 {n} ×</span>)}
+      </div>}
+      {showSupportPicker&&supportOptions.length>0&&<div className="support-team-list">
+        {supportOptions.map(t=>{
+          const sel=(f.supportTeams||[]).includes(t.name);
+          return(<div key={t.id} className={`support-team-opt${sel?' selected':''}`} onClick={()=>toggleSupport(t.name)}>
+            <div className="support-team-check">{sel&&'✓'}</div>
+            <span>{t.name}</span>
+          </div>);
+        })}
+      </div>}
+      {showSupportPicker&&supportOptions.length===0&&f.teamName&&<div style={{fontSize:'.74rem',color:'var(--text3)',padding:'6px 4px'}}>Seçilebilecek başka ekip yok.</div>}
+    </div></div>}
+
+    {/* Tarih */}
+    <div className="fr"><div>
+      <label className="lbl">Başlangıç Tarihi *{projStartDate&&<span style={{color:'var(--text3)',fontWeight:400}}> — min: {fmt(projStartDate)}</span>}</label>
+      <input className="inp" type="date" value={f.startDate} min={projStartDate||''}
+        onChange={e=>{set('startDate',e.target.value);setErrors(p=>({...p,startDate:null}));}}/>
+      {errors.startDate&&<div style={{fontSize:'.72rem',color:'var(--red)',marginTop:3}}>{errors.startDate}</div>}
+    </div></div>
+
+    {/* Süre */}
+    <div className="fr"><div>
+      <label className="lbl">Süre Türü</label>
+      <div className="seg-ctrl">
+        <button type="button" className={`seg-btn${f.durationMode==='days'?' on':''}`} onClick={()=>{set('durationMode','days');set('durationInput',1);}}>📅 Gün</button>
+        <button type="button" className={`seg-btn${f.durationMode==='sprints'?' on':''}`} onClick={()=>{set('durationMode','sprints');set('durationInput',1);}}>🔄 Sprint</button>
+      </div>
+    </div></div>
+    <div className={`fr${f.durationMode==='sprints'?' fr2':''}`}>
+      <div>
+        <label className="lbl">{f.durationMode==='sprints'?`Sprint Sayısı (1–${maxSp})`:`Süre (1–${MAX_DAYS} gün)`}</label>
+        <input className="inp" type="number" min="1" max={f.durationMode==='sprints'?maxSp:MAX_DAYS}
+          value={f.durationInput} onChange={e=>handleDurChange(e.target.value)} onBlur={handleDurBlur}/>
+      </div>
+      {f.durationMode==='sprints'&&<div>
+        <label className="lbl">Sprint Uzunluğu</label>
+        <select className="sel" value={f.sprintWeeks} onChange={e=>{const sw=parseInt(e.target.value);set('sprintWeeks',sw);set('durationInput',1);}}>
+          <option value={1}>1 hafta</option><option value={2}>2 hafta</option>
+          <option value={3}>3 hafta</option><option value={4}>4 hafta</option>
+        </select>
+      </div>}
+    </div>
+
+    {/* Önizleme kartı */}
+    {endDate&&<div className="task-modal-preview">
+      <div className="tmp-row">
+        <span className="tmp-label">📅 Bitiş Tarihi</span>
+        <span className={`tmp-value ${isLateEnd?'tmp-end-warn':''}`}>{fmt(endDate)}{isLateEnd&&' ⚠'}</span>
+      </div>
+      <div className="tmp-row">
+        <span className="tmp-label">⏱ Toplam Süre</span>
+        <span className="tmp-value">{durationDays} gün{f.durationMode==='sprints'&&` (${f.durationInput} sprint)`}</span>
+      </div>
+      {f.teamName&&<div className="tmp-row">
+        <span className="tmp-label">👥 Ana Ekip</span>
+        <span className="tmp-value" style={{color:'var(--accent)'}}>{f.teamName}</span>
+      </div>}
+      {(f.supportTeams||[]).length>0&&<div className="tmp-row">
+        <span className="tmp-label">🤝 Destek</span>
+        <span className="tmp-value" style={{color:'var(--purple)',fontSize:'.78rem'}}>{(f.supportTeams||[]).join(', ')}</span>
+      </div>}
+      {isLateEnd&&baselineEnd&&<div style={{fontSize:'.72rem',color:'var(--red)',marginTop:2,fontFamily:'var(--fm)'}}>⚠ Baseline bitiş: {fmt(baselineEnd)} — bu tarih aşılıyor</div>}
+    </div>}
+
+    <div className="form-foot">
+      <button className="btn btn-g" onClick={onClose}>İptal</button>
+      <button className="btn btn-p" onClick={submit}>{isDuplicate?'Kopyayı Kaydet':initial?'Güncelle':'Görevi Ekle'}</button>
+    </div>
   </div></div>);
 }
 
 /* ══ TIMELINE TAB ═══════════════════════════════════════ */
 function TimelineTab({proj,updateProj}){
   const{tasks,baselineEnd,baselineTasks,projectTeams=[],completedAt}=proj;
-  const[showModal,setShowModal]=useState(false);
-  const[modalPrefill,setModalPrefill]=useState(null);
-  const openAddModal=(prefill=null)=>{setModalPrefill(prefill);setShowModal(true);};
-  const[editTask,setEditTask]=useState(null);
+  const[activeModal,setActiveModal]=useState(null); // {mode:'new'|'edit'|'dup', prefill?, task?}
   const[showAll,setShowAll]=useState(false);
   const[tFilt,setTFilt]=useState('all');
   const[sumOpen,setSumOpen]=useState(true);
@@ -768,16 +1049,39 @@ function TimelineTab({proj,updateProj}){
   const[confirmDelTeam,setConfirmDelTeam]=useState(null);
   const[showComplete,setShowComplete]=useState(false);
   const[exporting,setExporting]=useState(false);
-  // ignoredImpacts is stored per-project in proj data for persistence across shares/tabs
-  // Key: taskId, Value: origEnd string at time of ignore (so re-trigger if task changes again)
+  const[ganttSortDate,setGanttSortDate]=useState(false);
   const ignoredImpacts=proj.ignoredImpacts||{};
   const setIgnoredImpact=(taskId,origEnd)=>updateProj(p=>({...p,ignoredImpacts:{...(p.ignoredImpacts||{}),[taskId]:origEnd}}));
   const clearIgnoredImpact=(taskId)=>updateProj(p=>{const ig={...(p.ignoredImpacts||{})};delete ig[taskId];return{...p,ignoredImpacts:ig};});
   const ganttRef=useRef(null);
+  const teamsRef=useRef(null);
 
   const scheduled=useMemo(()=>computeSched(tasks),[tasks]);
+  // Task list sorted by date
+  const sortedScheduled=useMemo(()=>[...scheduled].sort((a,b)=>a.start.localeCompare(b.start)),[scheduled]);
   const pe=pEnd(scheduled),ps=pStart(scheduled);
   const delay=pe&&baselineEnd?Math.max(0,diffDays(baselineEnd,pe)):0;
+
+  // Timeline progress: sadece zaman yüzdesi (projenin kaçta kaçı geçti)
+  const timePct=useMemo(()=>{
+    if(!ps||!pe||completedAt)return null;
+    const today=todayStr();
+    if(today<ps)return 0;
+    if(today>pe)return 100;
+    const total=Math.max(1,diffDays(ps,pe));
+    return Math.round(diffDays(ps,today)/total*100);
+  },[ps,pe,completedAt]);
+
+  // canAdd: if no teams, scroll to teams panel and open it instead of blocking
+  const canAdd=projectTeams.length>0&&!completedAt;
+  const handleAddClick=()=>{
+    if(!canAdd&&!completedAt){
+      setTeamsOpen(true);
+      setTimeout(()=>teamsRef.current?.scrollIntoView({behavior:'smooth',block:'start'}),50);
+      return;
+    }
+    setActiveModal({mode:'new'});
+  };
 
   // Build impact map: for each delayed/extended task, find impacted tasks
   // ignoredImpacts stores {taskId: "lastIgnoredTaskEnd"} - re-triggers when task.end increases further
@@ -785,14 +1089,15 @@ function TimelineTab({proj,updateProj}){
     if(!baselineEnd)return {};
     const map={};
     scheduled.forEach(task=>{
-      const{delayed,extended}=getTS(task,baselineEnd,baselineTasks);
-      if(delayed||extended){
+      const{delayed,extended,isNew}=getTS(task,baselineEnd,baselineTasks);
+      if(delayed||extended||isNew){
+        // For baseline tasks: use their original end. For new tasks: use task.end as reference.
         const orig=(baselineTasks||[]).find(o=>o.id===task.id);
-        if(!orig)return;
-        // Re-trigger: if task.end is now GREATER than when user last ignored/postponed it
-        const lastIgnoredTaskEnd=ignoredImpacts[task.id]; // stores task.end at ignore time
-        if(lastIgnoredTaskEnd&&task.end<=lastIgnoredTaskEnd)return; // not grown further → still ignored
-        const impacted=findImpactedTasks(task,scheduled,baselineTasks);
+        const origEnd=orig?orig.end:null;
+        // Re-trigger check: skip only if task hasn't grown since last ignore
+        const lastIgnored=ignoredImpacts[task.id];
+        if(lastIgnored&&task.end<=lastIgnored)return;
+        const impacted=findImpactedTasks(task,scheduled,baselineTasks,origEnd);
         if(impacted.length>0)map[task.id]=impacted;
       }
     });
@@ -802,15 +1107,16 @@ function TimelineTab({proj,updateProj}){
   // Per-team summary — professional table data
   const teamSummary=useMemo(()=>projectTeams.map(team=>{
     const tt=scheduled.filter(t=>t.teamName===team.name);
+    const supportTasks=scheduled.filter(t=>t.teamName!==team.name&&(t.supportTeams||[]).includes(team.name));
     const blTasks=(baselineTasks||[]).filter(t=>tt.some(s=>s.id===t.id));
     const blDays=blTasks.reduce((s,t)=>s+t.durationDays,0);
     const currDays=tt.reduce((s,t)=>s+t.durationDays,0);
+    const supportDays=supportTasks.reduce((s,t)=>s+t.durationDays,0);
     const delayedTasks=tt.filter(t=>baselineEnd&&t.end>baselineEnd);
     const extendedTasks=tt.filter(t=>{const o=(baselineTasks||[]).find(o=>o.id===t.id);return o&&t.durationDays>o.durationDays;});
-    const delayDays=baselineEnd&&pe?Math.max(0,diffDays(baselineEnd,pe)):0;
     const extDays=extendedTasks.reduce((s,t)=>{const o=(baselineTasks||[]).find(o=>o.id===t.id);return s+(o?t.durationDays-o.durationDays:0);},0);
-    return{name:team.name,taskCount:tt.length,blDays,currDays,delayedCount:delayedTasks.length,extendedCount:extendedTasks.length,extDays};
-  }),[projectTeams,scheduled,baselineEnd,baselineTasks,pe]);
+    return{name:team.name,taskCount:tt.length,blDays,currDays,delayedCount:delayedTasks.length,extendedCount:extendedTasks.length,extDays,supportCount:supportTasks.length,supportDays};
+  }),[projectTeams,scheduled,baselineEnd,baselineTasks]);
 
   const completionInfo=useMemo(()=>{
     if(!completedAt)return null;
@@ -835,16 +1141,27 @@ function TimelineTab({proj,updateProj}){
     updateProj(p=>({...p,projectTeams:(p.projectTeams||[]).filter(t=>t.id!==teamId),tasks:p.tasks.filter(t=>t.teamName!==team.name),teams:p.teams.filter(t=>t.id!==teamId),items:p.items.filter(i=>i.teamId!==teamId)}));
     setConfirmDelTeam(null);
   };
-  const addMember=(teamId)=>{const name=(newMember[teamId]||'').trim();if(!name)return;updateProj(p=>({...p,projectTeams:(p.projectTeams||[]).map(t=>t.id===teamId?{...t,members:[...(t.members||[]),{id:uid(),name}]}:t)}));setNewMember(p=>({...p,[teamId]:''}));};
+  const addMember=(teamId)=>{
+    const name=(newMember[teamId]||'').trim();
+    if(!name)return;
+    const team=(projectTeams||[]).find(t=>t.id===teamId);
+    if(team&&(team.members||[]).some(m=>m.name.toLowerCase()===name.toLowerCase()))return;
+    updateProj(p=>({...p,projectTeams:(p.projectTeams||[]).map(t=>t.id===teamId?{...t,members:[...(t.members||[]),{id:uid(),name}]}:t)}));
+    setNewMember(p=>({...p,[teamId]:''}));
+  };
   const deleteMember=(teamId,memberId)=>updateProj(p=>({...p,projectTeams:(p.projectTeams||[]).map(t=>t.id===teamId?{...t,members:(t.members||[]).filter(m=>m.id!==memberId)}:t)}));
 
   // Task management
-  const addTask=form=>{updateProj(p=>({...p,tasks:[...p.tasks,{...form,id:uid()}]}));setShowModal(false);};
+  const addTask=form=>{updateProj(p=>({...p,tasks:[...p.tasks,{...form,id:uid()}]}));setActiveModal(null);};
   const editSave=form=>{
-    updateProj(p=>({...p,tasks:p.tasks.map(t=>t.id===editTask.id?{...form,id:t.id}:t)}));
-    setEditTask(null);
+    updateProj(p=>({...p,tasks:p.tasks.map(t=>t.id===activeModal.task.id?{...form,id:t.id}:t)}));
+    setActiveModal(null);
   };
   const delTask=id=>updateProj(p=>({...p,tasks:p.tasks.filter(t=>t.id!==id)}));
+  const dupTask=task=>{
+    const{id,...rest}=task;
+    setActiveModal({mode:'dup',prefill:{...rest,name:rest.name+' (kopya)'}});
+  };
   const setBaseline=()=>updateProj(p=>({...p,baselineEnd:pe,baselineTasks:JSON.parse(JSON.stringify(computeSched(p.tasks)))}));
   const resetBL=()=>updateProj(p=>({...p,baselineEnd:null,baselineTasks:null}));
   const doComplete=date=>{updateProj(p=>({...p,completedAt:date}));setShowComplete(false);};
@@ -853,18 +1170,18 @@ function TimelineTab({proj,updateProj}){
 
   // Impact: postpone selected tasks
   const handlePostpone=(taskIds)=>{
-    if(!impactTask||!baselineTasks)return;
+    if(!impactTask)return;
     const orig=(baselineTasks||[]).find(o=>o.id===impactTask.id);
-    if(!orig)return;
-    const origEnd=orig.end;
+    // For new tasks (no baseline entry), use task.end as both reference and current
+    const origEnd=orig?orig.end:impactTask.end;
     const shift=diffDays(origEnd,impactTask.end);
+    if(shift<=0){setImpactTask(null);return;}
     updateProj(p=>({
       ...p,
       tasks:p.tasks.map(t=>{
         if(!taskIds.includes(t.id))return t;
         return{...t,startDate:addDays(t.startDate,shift)};
       }),
-      // Store task.end (current) as ignore key → re-triggers if task grows even further
       ignoredImpacts:{...(p.ignoredImpacts||{}),[impactTask.id]:impactTask.end},
     }));
     setImpactTask(null);
@@ -926,8 +1243,6 @@ function TimelineTab({proj,updateProj}){
     setExporting(false);
   };
 
-  const canAdd=projectTeams.length>0&&!completedAt;
-
   return(<div>
     {/* Summary */}
     <div className="acc" style={{marginBottom:14}}>
@@ -948,20 +1263,35 @@ function TimelineTab({proj,updateProj}){
             {completedAt&&completionInfo?(<><div className="scard-val" style={{color:completionInfo.type==='early'?'var(--green)':completionInfo.type==='late'?'var(--red)':'var(--text2)'}}>{completionInfo.type==='early'?`-${completionInfo.days}g`:completionInfo.type==='late'?`+${completionInfo.days}g`:'—'}</div><div className="scard-lbl">{completionInfo.type==='early'?'Erken Bitti':completionInfo.type==='late'?'Gecikmeli':'Zamanında'}</div></>):(<><div className="scard-val" style={{color:delay>0?'var(--red)':'var(--text3)'}}>{delay>0?`+${delay}g`:'—'}</div><div className="scard-lbl">Gecikme</div>{!baselineEnd&&<div className="scard-sub">Baseline belirlenmedi</div>}</>)}
           </div>
         </div>
+        {/* Timeline progress - just time elapsed */}
+        {timePct!==null&&<div style={{padding:'0 16px 14px'}}>
+          <div style={{display:'flex',alignItems:'center',gap:8,marginBottom:4}}>
+            <span style={{fontSize:'.72rem',fontWeight:700,color:'var(--text2)',textTransform:'uppercase',letterSpacing:'.06em'}}>Proje Zamanı</span>
+            <span style={{fontSize:'.72rem',fontFamily:'var(--fm)',color:'var(--accent)',fontWeight:700,marginLeft:'auto'}}>{timePct}%</span>
+          </div>
+          <div style={{background:'var(--surface3)',borderRadius:4,height:8,overflow:'hidden'}}>
+            <div style={{width:`${timePct}%`,height:'100%',background:delay>0?'var(--red)':'var(--accent)',borderRadius:4,transition:'width .4s'}}/>
+          </div>
+          <div style={{fontSize:'.67rem',color:'var(--text3)',fontFamily:'var(--fm)',marginTop:4}}>
+            {ps?fmt(ps):''} — {pe?fmt(pe):''}
+          </div>
+        </div>}
 
         {/* Professional team summary table */}
-        {baselineEnd&&teamSummary.length>0&&<div style={{padding:'0 16px 16px'}}>
+        {teamSummary.length>0&&<div style={{padding:'0 16px 16px'}}>
           <div style={{fontSize:'.72rem',fontWeight:700,color:'var(--text2)',textTransform:'uppercase',letterSpacing:'.06em',marginBottom:10}}>Ekip Bazlı Analiz</div>
           <table className="team-sum-table">
             <thead>
               <tr>
-                <th style={{width:'22%'}}>Ekip</th>
-                <th style={{width:'7%'}}>Görev</th>
-                <th style={{width:'14%'}}>Baseline Süre</th>
-                <th style={{width:'14%'}}>Güncel Süre</th>
-                <th style={{width:'12%'}}>Uzama</th>
-                <th style={{width:'14%'}}>Gecikme</th>
-                <th style={{width:'17%'}}>Durum</th>
+                <th style={{width:'18%'}}>Ekip</th>
+                <th style={{width:'6%'}}>Görev</th>
+                {baselineEnd&&<th style={{width:'11%'}}>Baseline</th>}
+                <th style={{width:'11%'}}>Güncel Süre</th>
+                {baselineEnd&&<th style={{width:'9%'}}>Uzama</th>}
+                {baselineEnd&&<th style={{width:'11%'}}>Gecikme</th>}
+                <th style={{width:'10%'}}>Destek</th>
+                <th style={{width:'10%'}}>Destek Süre</th>
+                {baselineEnd&&<th style={{width:'14%'}}>Durum</th>}
               </tr>
             </thead>
             <tbody>
@@ -973,18 +1303,28 @@ function TimelineTab({proj,updateProj}){
                 return(<tr key={ts.name}>
                   <td><span className="ts-name" title={ts.name}>{ts.name}</span></td>
                   <td><span className="ts-num">{ts.taskCount}</span></td>
+                  {baselineEnd&&<td><span className="ts-num">{ts.blDays>0?`${ts.blDays}g`:'—'}</span></td>}
                   <td>
-                    <span className="ts-num">{ts.blDays>0?`${ts.blDays}g`:'—'}</span>
-                  </td>
-                  <td>
-                    {ts.blDays>0&&diffD!==0
+                    {baselineEnd&&ts.blDays>0&&diffD!==0
                       ?<><span className="ts-num" style={{color:diffD>0?'var(--orange)':'var(--green)',fontWeight:700}}>{ts.currDays}g</span><span className="ts-sub">{diffD>0?'+':'−'}{Math.abs(diffD)}g</span></>
-                      :<span className="ts-num" style={{color:'var(--text3)'}}>{ts.blDays>0?`${ts.currDays}g`:'—'}</span>
+                      :<span className="ts-num" style={{color:'var(--text)'}}>{ts.currDays>0?`${ts.currDays}g`:'—'}</span>
                     }
                   </td>
-                  <td>{hasExt?<span className="ts-badge ts-warn">+{ts.extDays}g</span>:<span style={{color:'var(--text3)',fontSize:'.72rem',fontFamily:'var(--fm)'}}>—</span>}</td>
-                  <td>{hasDelay?<span className="ts-badge ts-delay">{ts.delayedCount} görev</span>:<span style={{color:'var(--text3)',fontSize:'.72rem',fontFamily:'var(--fm)'}}>—</span>}</td>
-                  <td>{status==='delay'?<span className="ts-badge ts-delay">⚠ Gecikmeli</span>:status==='extend'?<span className="ts-badge ts-warn">~ Uzama var</span>:<span className="ts-badge ts-ok">✓ Normal</span>}</td>
+                  {baselineEnd&&<td>{hasExt?<span className="ts-badge ts-warn">+{ts.extDays}g</span>:<span style={{color:'var(--text3)',fontSize:'.72rem',fontFamily:'var(--fm)'}}>—</span>}</td>}
+                  {baselineEnd&&<td>{hasDelay?<span className="ts-badge ts-delay">{ts.delayedCount} görev</span>:<span style={{color:'var(--text3)',fontSize:'.72rem',fontFamily:'var(--fm)'}}>—</span>}</td>}
+                  <td>
+                    {ts.supportCount>0
+                      ?<span className="ts-badge" style={{background:'var(--purple-l)',color:'var(--purple)'}}>🤝 {ts.supportCount}</span>
+                      :<span style={{color:'var(--text3)',fontSize:'.72rem',fontFamily:'var(--fm)'}}>—</span>
+                    }
+                  </td>
+                  <td>
+                    {ts.supportDays>0
+                      ?<span className="ts-num" style={{color:'var(--purple)',fontWeight:600}}>{ts.supportDays}g</span>
+                      :<span style={{color:'var(--text3)',fontSize:'.72rem',fontFamily:'var(--fm)'}}>—</span>
+                    }
+                  </td>
+                  {baselineEnd&&<td>{status==='delay'?<span className="ts-badge ts-delay">⚠ Gecikmeli</span>:status==='extend'?<span className="ts-badge ts-warn">~ Uzama var</span>:<span className="ts-badge ts-ok">✓ Normal</span>}</td>}
                 </tr>);
               })}
             </tbody>
@@ -997,7 +1337,7 @@ function TimelineTab({proj,updateProj}){
     {!completedAt&&delay>0&&<div className="banner bn-d"><span>⚠️</span><span>Proje <strong>{delay} gün</strong> gecikiyor. Baseline: <strong>{fmt(baselineEnd)}</strong> → Güncel: <strong>{fmt(pe)}</strong></span></div>}
     {!completedAt&&delay===0&&baselineEnd&&tasks.length>0&&<div className="banner bn-ok"><span>✅</span><span>Proje zamanında ilerliyor. Bitiş: <strong>{fmt(pe)}</strong></span></div>}
     {!baselineEnd&&tasks.length>0&&<div className="banner bn-i"><span>ℹ️</span><span>Görevleri girdikten sonra <strong>"Baseline Belirle"</strong> butonuna tıklayın.</span></div>}
-    {!canAdd&&!completedAt&&<div className="banner bn-w"><span>⚠️</span><span>Görev eklemek için önce <strong>en az bir ekip</strong> tanımlayın.</span></div>}
+    {!canAdd&&!completedAt&&<div className="banner bn-w"><span>⚠️</span><span>Görev eklemek için önce <strong>en az bir ekip</strong> tanımlayın. <button className="btn btn-g btn-sm" style={{marginLeft:8}} onClick={()=>{setTeamsOpen(true);setTimeout(()=>teamsRef.current?.scrollIntoView({behavior:'smooth',block:'start'}),50);}}>Ekip ekle →</button></span></div>}
     {completedAt&&completionInfo&&<div className={`banner ${completionInfo.type==='early'?'bn-ok':completionInfo.type==='late'?'bn-d':'bn-tl'}`}>
       <span>{completionInfo.type==='early'?'🎉':completionInfo.type==='late'?'⚠️':'🏁'}</span>
       <span>Proje <strong>{fmt(completedAt)}</strong> tarihinde sonlandırıldı. {completionInfo.type==='early'?`${completionInfo.days} gün erken.`:completionInfo.type==='late'?`${completionInfo.days} gün gecikmeli.`:'Zamanında.'}</span>
@@ -1007,7 +1347,7 @@ function TimelineTab({proj,updateProj}){
     <div className="gl-layout">
       <div>
         {/* Teams collapsible */}
-        <div className="cpanel">
+        <div className="cpanel" ref={teamsRef}>
           <div className={`cpanel-hdr${teamsOpen?' oh':''}`} onClick={()=>setTeamsOpen(o=>!o)}>
             <span className={`carrow${teamsOpen?' open':''}`}>▶</span>
             <span className="cpanel-title">Ekipler & Üyeler</span>
@@ -1015,9 +1355,13 @@ function TimelineTab({proj,updateProj}){
           </div>
           {teamsOpen&&<div style={{padding:'12px 14px'}}>
             {projectTeams.length===0&&<div style={{fontSize:'.72rem',padding:'8px',background:'var(--accent-l)',borderRadius:'6px',color:'var(--accent)',marginBottom:8}}>En az bir ekip tanımlayın.</div>}
-            {projectTeams.map(team=>(
-              <div key={team.id} className="team-tag-item">
+            {projectTeams.map(team=>{
+              const tIdx=teamColorIdx(team.name,projectTeams);
+              const tColor=TEAM_COLORS[tIdx];
+              return(
+              <div key={team.id} className="team-tag-item" style={{borderLeft:`3px solid ${tColor}`}}>
                 <div className="team-tag-header">
+                  <div style={{width:8,height:8,borderRadius:'50%',background:tColor,flexShrink:0}}/>
                   <span className="team-tag-name" title={team.name}>{team.name}</span>
                   {!completedAt&&<button className="team-tag-del" onClick={()=>setConfirmDelTeam(team.id)} title="Ekibi sil">×</button>}
                 </div>
@@ -1027,7 +1371,7 @@ function TimelineTab({proj,updateProj}){
                   <button className="btn btn-g btn-sm" onClick={()=>addMember(team.id)} style={{flexShrink:0}}>+ Üye</button>
                 </div>}
               </div>
-            ))}
+            );})}
             {!completedAt&&<div className="team-add-row">
               <input className="inp" placeholder="Yeni ekip adı..." maxLength={MAX_NAME} value={newTeamName} onChange={e=>setNewTeamName(e.target.value.replace(/[^a-zA-Z0-9çÇğĞıİöÖşŞüÜ\s]/g,'').slice(0,MAX_NAME))} onKeyDown={e=>e.key==='Enter'&&addTeam()} style={{fontSize:'.82rem',padding:'6px 10px'}}/>
               <button className="btn btn-p btn-sm" onClick={addTeam} style={{flexShrink:0}}>+ Ekle</button>
@@ -1044,23 +1388,26 @@ function TimelineTab({proj,updateProj}){
             <span style={{fontSize:'.72rem',color:'var(--text3)',fontFamily:'var(--fm)'}}>{tasks.length}</span>
           </div>
           {tasksOpen&&<div style={{padding:'10px 14px'}}>
-            <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:8}}>
+            <div style={{display:'flex',alignItems:'center',gap:5,marginBottom:8,flexWrap:'wrap'}}>
               <span style={{fontSize:'.78rem',color:'var(--text3)',fontFamily:'var(--fm)',flex:1}}>Görevler ({tasks.length})</span>
               <button className="btn btn-g btn-sm" onClick={()=>setShowAll(true)} title="Geniş görünüm" style={{display:tasks.length>0?'inline-flex':'none'}}>⛶</button>
-              <button className="btn btn-p btn-sm" onClick={()=>openAddModal(null)} disabled={!canAdd}>+ Ekle</button>
+              <button className="btn btn-p btn-sm" onClick={handleAddClick}>+ Ekle</button>
             </div>
             {tasks.length===0?<div className="no-hint">{canAdd?'Henüz görev yok':'Önce ekip ekle'}</div>:
-              <div className="task-list">{scheduled.map((t,i)=>{
+              <div className="task-list">{sortedScheduled.map((t,i)=>{
                 const{delayed,extended,isNew}=getTS(t,baselineEnd,baselineTasks);
                 const origT=(baselineTasks||[]).find(o=>o.id===t.id);
+                const tIdx=teamColorIdx(t.teamName,projectTeams);
+                const tColor=TEAM_COLORS[tIdx];
                 let cls='';
                 if(delayed)cls=' delayed';else if(extended)cls=' extended';else if(isNew)cls=' new-after-bl';
-                return(<div key={t.id} className={`titem${cls}`}>
+                return(<div key={t.id} className={`titem${cls}`} style={{borderLeft:`3px solid ${tColor}`}}>
                   <div className="titem-top">
                     <span className="titem-num">{i+1}</span>
                     <div className="titem-body">
                       <div className="titem-name">{t.name}</div>
-                      {t.teamName&&<div className="titem-team" title={t.teamName}>{t.teamName}</div>}
+                      {t.teamName&&<div className="titem-team" title={t.teamName} style={{color:tColor}}>● {t.teamName}</div>}
+                      {(t.supportTeams||[]).length>0&&<div style={{fontSize:'.65rem',color:'var(--purple)',fontFamily:'var(--fm)',marginTop:1}}>🤝 {(t.supportTeams||[]).join(', ')}</div>}
                       <div className="titem-meta">{t.durationDays}g · {fmt(t.start)} → {fmt(t.end)}</div>
                       <div className="titem-flags">
                         {delayed&&<span className="badge b-rd">⚠ Gecikme{extended?' & Uzama':''}</span>}
@@ -1070,7 +1417,8 @@ function TimelineTab({proj,updateProj}){
                       {origT&&origT.durationDays!==t.durationDays&&<div style={{fontSize:'.66rem',color:'var(--text2)',fontFamily:'var(--fm)',marginTop:2}}>Orijinal: {origT.durationDays}g</div>}
                     </div>
                     <div className="titem-actions">
-                      {!completedAt&&<button className="ibtn b" onClick={()=>setEditTask(t)}>✏️</button>}
+                      {!completedAt&&<button className="ibtn b" onClick={()=>dupTask(t)} title="Kopyala">⧉</button>}
+                      {!completedAt&&<button className="ibtn b" onClick={()=>setActiveModal({mode:'edit',task:t})}>✏️</button>}
                       {!completedAt&&<button className="ibtn r" onClick={()=>delTask(t.id)}>🗑</button>}
                     </div>
                   </div>
@@ -1114,21 +1462,37 @@ function TimelineTab({proj,updateProj}){
                 {projectTeams.map(t=><option key={t.id} value={t.name} title={t.name}>{t.name.length>14?t.name.slice(0,14)+'…':t.name}</option>)}
               </select>
             </div>}
+            <button className={`btn btn-sm ${ganttSortDate?'btn-p':'btn-g'}`} onClick={()=>setGanttSortDate(v=>!v)} title="Ekip sınırı olmaksızın tarihe göre sırala" style={{fontSize:'.72rem',padding:'3px 8px'}}>
+              📅 {ganttSortDate?'Ekip Bağımsız':'Ekip Bazlı'}
+            </button>
             {tasks.length>0&&<span className="badge b-bl">📍 {fmt(todayStr())}</span>}
           </div>
         </div>
-        <GanttChart scheduled={scheduled} baselineTasks={baselineTasks} baselineEnd={baselineEnd} completedAt={completedAt} teamFilter={tFilt} ganttRef={ganttRef} onBarClick={t=>!completedAt&&setEditTask(t)} impactMap={impactMap} onImpactClick={task=>setImpactTask(task)} onAddTask={!completedAt?teamName=>openAddModal({teamName}):null} onDragAdd={!completedAt?({teamName,startDate,duration})=>openAddModal({teamName,startDate,duration}):null}/>
+        <GanttChart scheduled={scheduled} baselineTasks={baselineTasks} baselineEnd={baselineEnd} completedAt={completedAt} teamFilter={tFilt} ganttRef={ganttRef} onBarClick={t=>!completedAt&&setActiveModal({mode:'edit',task:t})} impactMap={impactMap} onImpactClick={task=>setImpactTask(task)} projectTeams={projectTeams} sortByDate={ganttSortDate}
+          onDragSelect={canAdd?({startDate,durationDays,teamName})=>{
+            setActiveModal({mode:'new',prefill:{startDate,durationDays,durationInput:durationDays,durationMode:'days',teamName:ganttSortDate?'':teamName||'',sprintWeeks:2}});
+          }:null}
+          onTeamAddClick={canAdd?teamName=>{
+            setActiveModal({mode:'new',prefill:{teamName:teamName||'',startDate:todayStr()}});
+          }:null}
+          onBarResize={!completedAt?(task,newDays,commit)=>{
+            if(commit){
+              updateProj(p=>({...p,tasks:p.tasks.map(t=>t.id===task.id?{...t,durationDays:newDays,durationInput:newDays,durationMode:'days'}:t)}));
+            }
+          }:null}
+        />
       </div>
     </div>
 
-    {showModal&&<TaskModal prefill={modalPrefill} tasks={tasks} projectTeams={projectTeams} projStartDate={ps} baselineEnd={baselineEnd} onSave={addTask} onClose={()=>{setShowModal(false);setModalPrefill(null);}}/>}
-    {editTask&&<TaskModal initial={editTask} tasks={tasks} projectTeams={projectTeams} projStartDate={ps} baselineEnd={baselineEnd} onSave={editSave} onClose={()=>setEditTask(null)}/>}
-    {showAll&&<TasksFullModal scheduled={scheduled} baselineTasks={baselineTasks} baselineEnd={baselineEnd} readOnly={!!completedAt} onEdit={t=>{setEditTask(t);setShowAll(false);}} onDelete={id=>{delTask(id);}} onClose={()=>setShowAll(false)}/>}
+    {activeModal&&activeModal.mode==='edit'&&<TaskModal initial={activeModal.task} tasks={tasks} projectTeams={projectTeams} projStartDate={ps} baselineEnd={baselineEnd} onSave={editSave} onClose={()=>setActiveModal(null)}/>}
+    {activeModal&&activeModal.mode==='new'&&<TaskModal prefill={activeModal.prefill||null} isDuplicate={false} tasks={tasks} projectTeams={projectTeams} projStartDate={ps} baselineEnd={baselineEnd} onSave={addTask} onClose={()=>setActiveModal(null)}/>}
+    {activeModal&&activeModal.mode==='dup'&&<TaskModal initial={activeModal.prefill||null} isDuplicate={true} tasks={tasks} projectTeams={projectTeams} projStartDate={ps} baselineEnd={baselineEnd} onSave={addTask} onClose={()=>setActiveModal(null)}/>}
+    {showAll&&<TasksFullModal scheduled={scheduled} baselineTasks={baselineTasks} baselineEnd={baselineEnd} readOnly={!!completedAt} onEdit={t=>{setActiveModal({mode:'edit',task:t});setShowAll(false);}} onDelete={id=>{delTask(id);}} onDuplicate={t=>dupTask(t)} onClose={()=>setShowAll(false)}/>}
     {showComplete&&<CompleteProjectModal proj={proj} onSave={doComplete} onClose={()=>setShowComplete(false)}/>}
     {confirmDelTeam&&<ConfirmModal title="Ekibi Sil" message={`"${projectTeams.find(t=>t.id===confirmDelTeam)?.name}" ekibini ve tüm görevlerini/iş öğelerini silmek istiyor musunuz?`} onConfirm={()=>deleteTeam(confirmDelTeam)} onCancel={()=>setConfirmDelTeam(null)}/>}
     {impactTask&&(()=>{
       const origT=(baselineTasks||[]).find(o=>o.id===impactTask.id);
-      return <ImpactModal changedTask={impactTask} origEnd={origT?.end||impactTask.end} impacted={impactMap[impactTask.id]||[]} onPostpone={ids=>handlePostpone(ids)} onIgnore={handleIgnore} onClose={()=>setImpactTask(null)}/>;
+      return <ImpactModal changedTask={impactTask} origEnd={origT?.end||null} impacted={impactMap[impactTask.id]||[]} projectTeams={projectTeams} onPostpone={ids=>handlePostpone(ids)} onIgnore={handleIgnore} onClose={()=>setImpactTask(null)}/>;
     })()}
   </div>);
 }
@@ -1171,16 +1535,28 @@ function KanbanItem({item,onUpdate,onDelete,onDragStart,onDragEnd,isDragging,typ
 function ItemModal({initial,teamId,projectTeams,projTasks,onSave,onClose}){
   const team=(projectTeams||[]).find(t=>t.id===teamId);
   const members=(team?.members)||[];
-  const teamTasks=(projTasks||[]).filter(t=>t.teamName===team?.name);
+  // Ana ekip VEYA destek ekip olarak bağlı görevleri listele
+  const teamTasks=(projTasks||[]).filter(t=>t.teamName===team?.name||(t.supportTeams||[]).includes(team?.name));
   const[f,setF]=useState(initial?{title:initial.title,type:initial.type,linkedTask:initial.linkedTask||'',assignee:initial.assignee||''}:{title:'',type:'task',linkedTask:'',assignee:''});
   const set=(k,v)=>setF(p=>({...p,[k]:v}));
   const submit=()=>{if(!f.title.trim())return;onSave({...f});};
-  return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onClose()}><div className="modal modal-sm">
+  return(<div className="mbd"><div className="modal modal-sm">
     <div className="modal-title">{initial?'Öğeyi Düzenle':'Yeni İş Öğesi'}</div>
     {!initial&&<div className="banner bn-i" style={{marginBottom:12,fontSize:'.78rem'}}>📌 To Do sütununa eklenir</div>}
     <div className="fr"><div><label className="lbl">Başlık *</label><input className="inp" placeholder="Öğe başlığı..." value={f.title} onChange={e=>set('title',e.target.value)} onKeyDown={e=>{if(e.key==='Enter')submit();}} autoFocus/></div></div>
     <div className="fr"><div><label className="lbl">Tür</label><div style={{display:'flex',gap:7}}>{['task','bug'].map(t=><label key={t} style={{display:'flex',alignItems:'center',gap:6,cursor:'pointer',padding:'7px 14px',borderRadius:'var(--r)',border:`1px solid ${f.type===t?'var(--accent)':'var(--border)'}`,background:f.type===t?'var(--accent-l)':'transparent',flex:1,justifyContent:'center',userSelect:'none',transition:'all .14s'}}><input type="radio" value={t} checked={f.type===t} onChange={()=>set('type',t)} style={{display:'none'}}/><span style={{fontSize:'.83rem'}}>{t==='task'?'📋 Task':'🐞 Bug'}</span></label>)}</div></div></div>
-    {teamTasks.length>0&&<div className="fr"><div><label className="lbl">İlgili Görev (opsiyonel)</label><select className="sel" value={f.linkedTask} onChange={e=>set('linkedTask',e.target.value)}><option value="">— Görev Seç —</option>{teamTasks.map(t=><option key={t.id} value={t.name} title={t.name}>{t.name.length>36?t.name.slice(0,36)+'…':t.name}</option>)}</select></div></div>}
+    {teamTasks.length>0&&<div className="fr"><div>
+      <label className="lbl">İlgili Görev (opsiyonel)</label>
+      <select className="sel" value={f.linkedTask} onChange={e=>set('linkedTask',e.target.value)}>
+        <option value="">— Görev Seç —</option>
+        {teamTasks.map(t=>{
+          const isSupport=(t.supportTeams||[]).includes(team?.name);
+          return(<option key={t.id} value={t.name} title={t.name}>
+            {isSupport?'🤝 ':'📌 '}{t.name.length>34?t.name.slice(0,34)+'…':t.name}{isSupport?` [${t.teamName}]`:''}
+          </option>);
+        })}
+      </select>
+    </div></div>}
     {members.length>0&&<div className="fr"><div><label className="lbl">Sorumlu (opsiyonel)</label><select className="sel" value={f.assignee} onChange={e=>set('assignee',e.target.value)}><option value="">— Kişi Seç —</option>{members.map(m=><option key={m.id} value={m.name} title={m.name}>{m.name.length>36?m.name.slice(0,36)+'…':m.name}</option>)}</select></div></div>}
     <div className="form-foot"><button className="btn btn-g" onClick={onClose}>İptal</button><button className="btn btn-p" onClick={submit}>{initial?'Güncelle':'Ekle'}</button></div>
   </div></div>);
@@ -1267,8 +1643,14 @@ function TrackerTab({proj,updateProj}){
 
   const agg=useMemo(()=>{const total=items.length,done=items.filter(i=>i.status==='done').length,pct=total>0?Math.round(done/total*100):0,tB=items.filter(i=>i.type==='bug').length,dB=items.filter(i=>i.type==='bug'&&i.status==='done').length;return{total,done,pct,tB,dB};},[items]);
   const tStats=useMemo(()=>teams.map(team=>{const ti=items.filter(i=>i.teamId===team.id);const total=ti.length,done=ti.filter(i=>i.status==='done').length,pct=total>0?Math.round(done/total*100):0,tB=ti.filter(i=>i.type==='bug').length,dB=ti.filter(i=>i.type==='bug'&&i.status==='done').length;return{team,total,done,pct,tB,dB};}),[teams,items]);
-  // Only members actually used in items
-  const usedMembers=useMemo(()=>{const names=new Set(items.filter(i=>i.assignee).map(i=>i.assignee));return[...names];},[items]);
+  // Members with open item counts
+  const usedMembers=useMemo(()=>{
+    const names=new Set(items.filter(i=>i.assignee).map(i=>i.assignee));
+    return[...names].map(name=>({
+      name,
+      open:items.filter(i=>i.assignee===name&&i.status!=='done').length
+    }));
+  },[items]);
   const visTeams=teamFilt==='all'?teams:teams.filter(t=>t.id===teamFilt);
 
   return(<div>
@@ -1312,10 +1694,10 @@ function TrackerTab({proj,updateProj}){
         {teams.map(t=><option key={t.id} value={t.id} title={t.name}>{t.name.length>16?t.name.slice(0,16)+'…':t.name}</option>)}
       </select>}
       <div style={{display:'flex',gap:4}}>{[['all','Tümü'],['task','Task'],['bug','Bug']].map(([v,l])=><button key={v} className={`fpill${typeFilter===v?' on':''}`} onClick={()=>setTypeFilter(v)}>{l}</button>)}</div>
-      {usedMembers.length>0&&<select className="sel" style={{width:'auto',padding:'5px 8px',fontSize:'.8rem',maxWidth:130}} value={personFilter} onChange={e=>setPersonFilter(e.target.value)}>
+      {usedMembers.length>0&&<select className="sel" style={{width:'auto',padding:'5px 8px',fontSize:'.8rem',maxWidth:160}} value={personFilter} onChange={e=>setPersonFilter(e.target.value)}>
         <option value="all">Tüm Kişiler</option>
         <option value="none">Atanmamış</option>
-        {usedMembers.map(name=><option key={name} value={name} title={name}>{name.length>14?name.slice(0,14)+'…':name}</option>)}
+        {usedMembers.map(({name,open})=><option key={name} value={name} title={name}>{name.length>14?name.slice(0,14)+'…':name}{open>0?` (${open} açık)`:''}</option>)}
       </select>}
       {items.length>0&&<button className="btn btn-gr btn-sm" style={{marginLeft:'auto'}} onClick={doExport}>📊 Excel</button>}
       <label className="btn btn-or btn-sm" style={{cursor:'pointer',margin:0}}>
@@ -1323,7 +1705,7 @@ function TrackerTab({proj,updateProj}){
         <input type="file" accept=".xlsx,.xls" style={{display:'none'}} onChange={doImportTracker}/>
       </label>
     </div>
-    {teams.length===0?<div style={{textAlign:'center',padding:'48px 20px',color:'var(--text3)'}}><div style={{fontSize:'2rem',marginBottom:8}}>👥</div><div style={{fontFamily:'var(--fd)',fontWeight:600,color:'var(--text2)',marginBottom:4}}>Henüz ekip yok</div><div style={{fontSize:'.82rem'}}>Timeline'dan veya buradan ekip ekleyin</div></div>
+    {teams.length===0?<div style={{textAlign:'center',padding:'48px 20px',color:'var(--text3)'}}><div style={{fontSize:'2rem',marginBottom:8}}>👥</div><div style={{fontFamily:'var(--fd)',fontWeight:600,color:'var(--text2)',marginBottom:4}}>Henüz ekip yok</div><div style={{fontSize:'.82rem'}}>Timeline veya buradan ekip ekleyin</div></div>
     :visTeams.map(team=><TeamSection key={team.id} team={team} items={items} onUpdateItem={upItem} onDeleteItem={delItem} onAddItem={addItem} onDeleteTeam={delTeam} dragState={drag} onDragStart={onDS} onDragEnd={onDE} onDrop={onDrop} typeFilter={typeFilter} personFilter={personFilter} projectTeams={projectTeams} projTasks={tasks}/>)}
   </div>);
 }
@@ -1438,7 +1820,21 @@ function Dashboard({projects,onSelect}){
         <div className="dash-grid">{g.items.map(i=><ProjCard key={i.proj.id} info={i}/>)}</div>
       </div>
     ))}
-    {projects.length===0&&<div style={{textAlign:'center',padding:'80px 20px',color:'var(--text3)'}}><div style={{fontSize:'3rem',marginBottom:14}}>📋</div><div style={{fontFamily:'var(--fd)',fontWeight:700,color:'var(--text2)',fontSize:'1.2rem',marginBottom:8}}>Henüz proje yok</div><div style={{fontSize:'.85rem'}}>Yukarıdan "+ Yeni Proje" ile başlayın</div></div>}
+    {projects.length===0&&<div style={{textAlign:'center',padding:'80px 20px'}}>
+      <div style={{fontSize:'3.5rem',marginBottom:16}}>🚀</div>
+      <div style={{fontFamily:'var(--fd)',fontWeight:700,color:'var(--text)',fontSize:'1.4rem',marginBottom:8}}>Hoş geldiniz!</div>
+      <div style={{fontSize:'.9rem',color:'var(--text2)',marginBottom:24,lineHeight:1.6,maxWidth:340,margin:'0 auto 24px'}}>Proje takibine başlamak için ilk projenizi oluşturun. Ekip, görev ve Gantt şeması hepsi burada.</div>
+      <button className="btn btn-p" style={{fontSize:'1rem',padding:'10px 24px'}} onClick={()=>{const ev=new CustomEvent('pf-new-proj');window.dispatchEvent(ev);}}>+ İlk Projeyi Oluştur</button>
+      <div style={{marginTop:32,display:'flex',justifyContent:'center',gap:24,flexWrap:'wrap'}}>
+        {[['📅','Timeline & Gantt','Görev ve tarihleri planlayın'],['👥','Ekip Yönetimi','Ekip ve üye tanımı yapın'],['📌','Tracker','Kanban ile iş takibi yapın']].map(([ic,t,d])=>(
+          <div key={t} style={{background:'var(--surface)',border:'1px solid var(--border)',borderRadius:'var(--rl)',padding:'16px',width:160,textAlign:'center',boxShadow:'var(--sh-sm)'}}>
+            <div style={{fontSize:'1.6rem',marginBottom:6}}>{ic}</div>
+            <div style={{fontWeight:600,fontSize:'.82rem',marginBottom:4}}>{t}</div>
+            <div style={{fontSize:'.72rem',color:'var(--text3)'}}>{d}</div>
+          </div>
+        ))}
+      </div>
+    </div>}
   </div>);
 }
 
@@ -1449,7 +1845,7 @@ function ShareModal({proj,onClose}){
   const shareKey=proj.shareKey||proj.id;
   const url=`${location.origin}${location.pathname}?key=${shareKey}`;
   const copy=()=>{navigator.clipboard.writeText(url).then(()=>{setC(true);setTimeout(()=>setC(false),2500);});};
-  return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onClose()}><div className="modal modal-sm">
+  return(<div className="mbd"><div className="modal modal-sm">
     <div className="modal-title">🔗 Projeyi Paylaş</div>
     <p style={{fontSize:'.83rem',color:'var(--text2)',marginBottom:14,lineHeight:1.55}}>Bu bağlantıyı paylaştığınız kişiler <strong>yalnızca bu projeyi</strong> görür ve düzenleyebilir. Değişiklikler anlık olarak senkronize edilir.</p>
     <div className="share-url">{url}</div>
@@ -1459,7 +1855,7 @@ function ShareModal({proj,onClose}){
 }
 
 function ProjectModal({onSave,onClose}){const[name,setName]=useState('');const submit=()=>{if(!name.trim())return;onSave(name.trim());};
-return(<div className="mbd" onClick={e=>e.target===e.currentTarget&&onClose()}><div className="modal modal-sm"><div className="modal-title">Yeni Proje</div><div className="fr"><div><label className="lbl">Proje Adı *</label><input className="inp" placeholder="Örn: Mobil Uygulama" value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&submit()} autoFocus/></div></div><div className="form-foot"><button className="btn btn-g" onClick={onClose}>İptal</button><button className="btn btn-p" onClick={submit}>Oluştur</button></div></div></div>);}
+return(<div className="mbd"><div className="modal modal-sm"><div className="modal-title">Yeni Proje</div><div className="fr"><div><label className="lbl">Proje Adı *</label><input className="inp" placeholder="Örn: Mobil Uygulama" value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&submit()} autoFocus/></div></div><div className="form-foot"><button className="btn btn-g" onClick={onClose}>İptal</button><button className="btn btn-p" onClick={submit}>Oluştur</button></div></div></div>);}
 
 function WelcomeScreen({onEnter}){const[name,setName]=useState('');const enter=()=>{if(!name.trim())return;onEnter(name.trim());};
 return(<div className="wscreen"><div className="wbox"><div className="wlogo">Project<em>Flow</em></div><div style={{fontSize:'.9rem',color:'var(--text2)',marginBottom:30}}>Ekip tabanlı proje takip sistemi</div><label className="lbl" style={{textAlign:'left',display:'block',marginBottom:6}}>Adınız *</label><input className="inp" placeholder="Adınızı girin..." value={name} onChange={e=>setName(e.target.value)} onKeyDown={e=>e.key==='Enter'&&enter()} autoFocus style={{marginBottom:14}}/><button className="btn btn-p" style={{width:'100%',justifyContent:'center',padding:10}} onClick={enter}>Başla →</button><div style={{marginTop:14,fontSize:'.72rem',color:'var(--text3)'}}>Verileriniz bu tarayıcıda saklanır</div></div></div>);}
@@ -1642,6 +2038,12 @@ function App(){
   const[showNewProj,setShowNewProj]=useState(false);
   const[showShare,setShowShare]=useState(false);
   const[confirmDel,setConfirmDel]=useState(null);
+
+  useEffect(()=>{
+    const h=()=>setShowNewProj(true);
+    window.addEventListener('pf-new-proj',h);
+    return()=>window.removeEventListener('pf-new-proj',h);
+  },[]);
 
   const apid=activeProjId||(projects.length>0?projects[0]?.id:null);
   const proj=projects.find(p=>p.id===apid)||null;
