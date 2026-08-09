@@ -592,6 +592,17 @@ const STATUSES=['todo','inprogress','review','done'];
 const SK='pf_v15';
 const loadAll=()=>{try{const v=localStorage.getItem(SK);return v?JSON.parse(v):null;}catch{return null;}};
 const saveAll=v=>{try{localStorage.setItem(SK,JSON.stringify(v));}catch{}};
+function migrateLinkedTasks(projects){
+  return projects.map(p=>{
+    const taskIds=new Set((p.tasks||[]).map(t=>t.id));
+    const items=(p.items||[]).map(i=>{
+      if(!i.linkedTask||taskIds.has(i.linkedTask))return i;
+      const matched=(p.tasks||[]).find(t=>t.name===i.linkedTask);
+      return matched?{...i,linkedTask:matched.id}:i;
+    });
+    return{...p,items};
+  });
+}
 
 /* ══ SUPABASE ═══════════════════════════════════════════ */
 const SB_URL='https://hailzmuaqyejjmrbxfik.supabase.co';
@@ -1729,7 +1740,7 @@ function TimelineTab({proj,updateProj}){
 }
 
 /* ══ KANBAN ITEM ════════════════════════════════════════ */
-function KanbanItem({item,onUpdate,onDelete,onDragStart,onDragEnd,isDragging,typeFilter,personFilter}){
+function KanbanItem({item,onUpdate,onDelete,onDragStart,onDragEnd,isDragging,typeFilter,personFilter,projTasks=[]}){
   const[pressing,setP]=useState(false);
   const idx=STATUSES.indexOf(item.status);
   const isDone=item.status==='done',isTodo=item.status==='todo';
@@ -1748,7 +1759,7 @@ function KanbanItem({item,onUpdate,onDelete,onDragStart,onDragEnd,isDragging,typ
       <span className={`tyb ${item.type==='bug'?'tyb-bug':'tyb-task'}`}>{item.type==='bug'?'🐞':'📋'}</span>
     </div>
     {(item.linkedTask||item.assignee)&&<div className="ki-tags">
-      {item.linkedTask&&<span className="badge b-gy" style={{maxWidth:130,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',cursor:'default'}} title={item.linkedTask}>📌 {item.linkedTask}</span>}
+      {item.linkedTask&&<span className="badge b-gy" style={{maxWidth:130,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',cursor:'default'}} title={projTasks.find(t=>t.id===item.linkedTask)?.name||item.linkedTask}>📌 {projTasks.find(t=>t.id===item.linkedTask)?.name||item.linkedTask}</span>}
       {item.assignee&&<span className="badge b-bl">👤 {item.assignee}</span>}
     </div>}
     <div className="ki-foot">
@@ -1782,7 +1793,7 @@ function ItemModal({initial,teamId,projectTeams,projTasks,onSave,onClose}){
         <option value="">{T.task_sel}</option>
         {teamTasks.map(t=>{
           const isSupport=(t.supportTeams||[]).includes(team?.name);
-          return(<option key={t.id} value={t.name} title={t.name}>
+          return(<option key={t.id} value={t.id} title={t.name}>
             {isSupport?'🤝 ':'📌 '}{t.name.length>34?t.name.slice(0,34)+'…':t.name}{isSupport?` [${t.teamName}]`:''}
           </option>);
         })}
@@ -1818,7 +1829,7 @@ function TeamSection({team,items,onUpdateItem,onDeleteItem,onAddItem,onDeleteTea
       return(<div key={status} className="kb-col">
         <div className="kb-col-hdr"><span>{T.sl[status]}</span><span className="kb-cnt">{filtered.length}</span></div>
         <div className={`drop-z${dOver===status?' dov':''}`} onDragOver={e=>{e.preventDefault();setDOver(status);}} onDragLeave={()=>setDOver(null)} onDrop={()=>dropC(status)}>
-          {ci.map(item=><KanbanItem key={item.id} item={item} onUpdate={handleUp} onDelete={onDeleteItem} onDragStart={onDragStart} onDragEnd={onDragEnd} isDragging={dragState.itemId===item.id} typeFilter={typeFilter} personFilter={personFilter}/>)}
+          {ci.map(item=><KanbanItem key={item.id} item={item} onUpdate={handleUp} onDelete={onDeleteItem} onDragStart={onDragStart} onDragEnd={onDragEnd} isDragging={dragState.itemId===item.id} typeFilter={typeFilter} personFilter={personFilter} projTasks={projTasks}/>)}
         </div>
         {status==='todo'&&<button className="add-ki-btn" onClick={()=>setShowAdd(true)}>{T.add_item_btn}</button>}
       </div>);
@@ -1845,7 +1856,7 @@ function TrackerTab({proj,updateProj}){
   const delItem=id=>updateProj(p=>({...p,items:p.items.filter(i=>i.id!==id)}));
   const onDS=id=>setDrag({itemId:id}),onDE=()=>setDrag({itemId:null});
   const onDrop=(iid,toTeam,status)=>{updateProj(p=>({...p,items:p.items.map(i=>i.id===iid?{...i,teamId:toTeam,status,updatedAt:new Date().toISOString(),updatedBy:window.__un||T.user_fb}:i)}));setDrag({itemId:null});};
-  const doExport=()=>{const rows=items.map(i=>({[T.xls_team]:teams.find(t=>t.id===i.teamId)?.name||'',[T.xls_title]:i.title,[T.xls_type]:i.type.toUpperCase(),[T.xls_status]:T.sl[i.status],[T.xls_linked]:i.linkedTask||'',[T.xls_assignee]:i.assignee||'',[T.xls_upd_by]:i.updatedBy||'',[T.xls_upd_at]:i.updatedAt?new Date(i.updatedAt).toLocaleString(LOCALE):''}));const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Tracker');XLSX.writeFile(wb,`${proj.name}_tracker.xlsx`);};
+  const doExport=()=>{const rows=items.map(i=>({[T.xls_team]:teams.find(t=>t.id===i.teamId)?.name||'',[T.xls_title]:i.title,[T.xls_type]:i.type.toUpperCase(),[T.xls_status]:T.sl[i.status],[T.xls_linked]:tasks.find(t=>t.id===i.linkedTask)?.name||i.linkedTask||'',[T.xls_assignee]:i.assignee||'',[T.xls_upd_by]:i.updatedBy||'',[T.xls_upd_at]:i.updatedAt?new Date(i.updatedAt).toLocaleString(LOCALE):''}));const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Tracker');XLSX.writeFile(wb,`${proj.name}_tracker.xlsx`);};
 
   const doImportTracker=(e)=>{
     const file=e.target.files[0];if(!file)return;
@@ -1856,16 +1867,29 @@ function TrackerTab({proj,updateProj}){
         const ws=wb.Sheets[wb.SheetNames[0]];
         const rows=XLSX.utils.sheet_to_json(ws);
         const gc2=(r,...keys)=>{for(const k of keys)if(r[k]!==undefined&&r[k]!=='')return r[k];return '';};
+        const teamCache={};
+        const getOrCreateTeam=(name,currentTeams)=>{
+          const key=name||'';
+          if(teamCache[key])return teamCache[key];
+          const existing=currentTeams.find(t=>t.name===key)||(key===''?currentTeams[0]:null);
+          if(existing){teamCache[key]=existing;return existing;}
+          const nt={id:uid(),name:key||'Import'};
+          teamCache[key]=nt;
+          return nt;
+        };
+        const currentTeams=[...teams];
         const newItems=rows.filter(r=>gc2(r,'Başlık','Title')).map(r=>{
           const teamName=String(gc2(r,'Ekip','Team')||'');
-          const team=teams.find(t=>t.name===teamName)||teams[0];
+          const team=getOrCreateTeam(teamName,currentTeams);
+          if(!currentTeams.find(t=>t.id===team.id))currentTeams.push(team);
           const statusMap={'TO DO':'todo','YAPILACAK':'todo','IN PROGRESS':'inprogress','DEVAM EDİYOR':'inprogress','IN REVIEW':'review','İNCELEMEDE':'review','COMPLETED':'done','TAMAMLANDI':'done'};
           const rawStatus=String(gc2(r,'Statü','Status')||'').toUpperCase();
           const status=statusMap[rawStatus]||'todo';
-          return{id:uid(),title:String(gc2(r,'Başlık','Title')),type:String(gc2(r,'Tür','Type')||'TASK').toLowerCase()==='bug'?'bug':'task',status,teamId:team?.id||'',linkedTask:String(gc2(r,'Görev','Task')||''),assignee:String(gc2(r,'Sorumlu','Assignee')||''),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),updatedBy:window.__un||T.user_fb};
+          return{id:uid(),title:String(gc2(r,'Başlık','Title')),type:String(gc2(r,'Tür','Type')||'TASK').toLowerCase()==='bug'?'bug':'task',status,teamId:team.id,linkedTask:String(gc2(r,'Görev','Task')||''),assignee:String(gc2(r,'Sorumlu','Assignee')||''),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),updatedBy:window.__un||T.user_fb};
         });
         if(newItems.length===0){alert(T.al_no_items);return;}
-        updateProj(p=>({...p,items:[...p.items,...newItems]}));
+        const newTeams=currentTeams.filter(t=>!teams.find(e=>e.id===t.id));
+        updateProj(p=>({...p,teams:[...p.teams,...newTeams],projectTeams:[...(p.projectTeams||[]),...newTeams.map(t=>({...t,members:[]}))],items:[...p.items,...newItems]}));
         alert(T.al_items_done(newItems.length));
       }catch(err){alert(T.al_import_err(err.message));}
     };
@@ -2190,7 +2214,7 @@ function App(){
             const localOnly=prev.projects.filter(lp=>!remoteProjs.find(rp=>rp.id===lp.id));
             // Ensure remote projects also have shareKey
             const remoteWithKey=remoteProjs.map(p=>p.shareKey?p:{...p,shareKey:uid()+uid()});
-            const merged=[...remoteWithKey,...localOnly];
+            const merged=migrateLinkedTasks([...remoteWithKey,...localOnly]);
             const next={...prev,projects:merged};
             saveAll(next);
             return next;
@@ -2198,12 +2222,12 @@ function App(){
         } else {
           // No remote data - use migrated local, save them all to Supabase
           setRaw(prev=>{
-            const next={...prev,projects:migratedLocal};
+            const next={...prev,projects:migrateLinkedTasks(migratedLocal)};
             saveAll(next);
             return next;
           });
           // Push all local projects to Supabase
-          for(const p of migratedLocal) await sbSaveProj(p);
+          for(const p of migrateLinkedTasks(migratedLocal)) await sbSaveProj(p);
         }
       }
       setSyncStatus('ok');
