@@ -443,7 +443,7 @@ tr:{lc:'tr-TR',da:'g',
   item_edit:'Öğeyi Düzenle',item_new:'Yeni İş Öğesi',item_note:'📌 Yapılacak sütununa eklenir',
   title_l:'Başlık *',title_ph:'Öğe başlığı...',type_l:'Tür',
   linked_l:'İlgili Görev (opsiyonel)',task_sel:'— Görev Seç —',
-  assignee_l:'Sorumlu (opsiyonel)',person_sel:'— Kişi Seç —',add_item:'Ekle',
+  assignee_l:'Sorumlu (opsiyonel)',person_sel:'— Kişi Seç —',add_item:'Ekle',note_l:'Not (opsiyonel)',note_ph:'Kısa bir not ekle...',
   overall_sum:'Genel Özet',done_col:'Tamamlanan',
   team_ph_tk:'Yeni ekip adı...',add_team_tk:'+ Ekip',all_teams:'Tüm Ekipler',
   all_people:'Tüm Kişiler',unassigned:'Atanmamış',open_n:n=>`(${n} açık)`,
@@ -452,7 +452,7 @@ tr:{lc:'tr-TR',da:'g',
   xls_task:'Görev',xls_team:'Ekip',xls_support:'Destek Ekipler',xls_dur:'Süre (g)',
   xls_start:'Başlangıç',xls_end:'Bitiş',xls_bl_end:'Baseline Bitiş',xls_delay:'Gecikme (g)',xls_ext:'Uzama (g)',
   xls_title:'Başlık',xls_type:'Tür',xls_status:'Statü',xls_linked:'Görev',
-  xls_assignee:'Sorumlu',xls_upd_by:'Son Güncelleyen',xls_upd_at:'Güncelleme',
+  xls_assignee:'Sorumlu',xls_note:'Not',xls_upd_by:'Son Güncelleyen',xls_upd_at:'Güncelleme',
   al_no_tasks:'Geçerli görev bulunamadı. "Görev" ve "Başlangıç" sütunlarının dolu olduğundan emin olun.',
   al_tasks_done:n=>`${n} görev başarıyla içe aktarıldı.`,
   al_import_err:msg=>`Import hatası: ${msg}`,al_png_err:msg=>`PNG export hatası: ${msg}`,
@@ -556,7 +556,7 @@ en:{lc:'en-US',da:'d',
   item_edit:'Edit Item',item_new:'New Work Item',item_note:'📌 Will be added to To Do column',
   title_l:'Title *',title_ph:'Item title...',type_l:'Type',
   linked_l:'Related Task (optional)',task_sel:'— Select Task —',
-  assignee_l:'Assignee (optional)',person_sel:'— Select Person —',add_item:'Add',
+  assignee_l:'Assignee (optional)',person_sel:'— Select Person —',add_item:'Add',note_l:'Note (optional)',note_ph:'Add a short note...',
   overall_sum:'Overall Summary',done_col:'Done',
   team_ph_tk:'New team name...',add_team_tk:'+ Team',all_teams:'All Teams',
   all_people:'All People',unassigned:'Unassigned',open_n:n=>`(${n} open)`,
@@ -565,7 +565,7 @@ en:{lc:'en-US',da:'d',
   xls_task:'Task',xls_team:'Team',xls_support:'Support Teams',xls_dur:'Duration (d)',
   xls_start:'Start',xls_end:'End',xls_bl_end:'Baseline End',xls_delay:'Delay (d)',xls_ext:'Extension (d)',
   xls_title:'Title',xls_type:'Type',xls_status:'Status',xls_linked:'Task',
-  xls_assignee:'Assignee',xls_upd_by:'Last Updated By',xls_upd_at:'Updated At',
+  xls_assignee:'Assignee',xls_note:'Note',xls_upd_by:'Last Updated By',xls_upd_at:'Updated At',
   al_no_tasks:'No valid tasks found. Make sure "Task" and "Start" columns are filled.',
   al_tasks_done:n=>`${n} task${n!==1?'s':''} imported successfully.`,
   al_import_err:msg=>`Import error: ${msg}`,al_png_err:msg=>`PNG export error: ${msg}`,
@@ -1762,10 +1762,11 @@ function KanbanItem({item,onUpdate,onDelete,onDragStart,onDragEnd,isDragging,typ
       {item.linkedTask&&<span className="badge b-gy" style={{maxWidth:130,overflow:'hidden',textOverflow:'ellipsis',whiteSpace:'nowrap',cursor:'default'}} title={projTasks.find(t=>t.id===item.linkedTask)?.name||item.linkedTask}>📌 {projTasks.find(t=>t.id===item.linkedTask)?.name||item.linkedTask}</span>}
       {item.assignee&&<span className="badge b-bl">👤 {item.assignee}</span>}
     </div>}
+    {item.note&&<div style={{fontSize:'.75rem',color:'var(--text2)',marginTop:4,lineHeight:1.4,wordBreak:'break-word'}} title={item.note.length>60?item.note:undefined}>📝 {item.note.length>60?item.note.slice(0,60)+'…':item.note}</div>}
     <div className="ki-foot">
       <div className="ki-meta">{item.updatedAt?`↗ ${new Date(item.updatedAt).toLocaleDateString(LOCALE)}`:''}</div>
       <div className="ki-ctrl">
-        {isTodo&&<button className="edit-b" onClick={e=>{e.stopPropagation();onUpdate({...item,_edit:true});}} title={T.tt_edit}>✏</button>}
+        <button className="edit-b" onClick={e=>{e.stopPropagation();onUpdate({...item,_edit:true});}} title={T.tt_edit}>✏</button>
         {idx>0&&<button className="back-b" onClick={revert} title={T.ki_back(T.sl[STATUSES[idx-1]])}>↩</button>}
         {isTodo&&<button className="del-b" style={{opacity:1}} onClick={e=>{e.stopPropagation();onDelete(item.id);}} title={T.tt_del}>×</button>}
       </div>
@@ -1779,15 +1780,15 @@ function ItemModal({initial,teamId,projectTeams,projTasks,onSave,onClose}){
   const members=(team?.members)||[];
   // Ana ekip VEYA destek ekip olarak bağlı görevleri listele
   const teamTasks=(projTasks||[]).filter(t=>t.teamName===team?.name||(t.supportTeams||[]).includes(team?.name));
-  const[f,setF]=useState(initial?{title:initial.title,type:initial.type,linkedTask:initial.linkedTask||'',assignee:initial.assignee||''}:{title:'',type:'task',linkedTask:'',assignee:''});
+  const[f,setF]=useState(initial?{title:initial.title,type:initial.type,linkedTask:initial.linkedTask||'',assignee:initial.assignee||'',note:initial.note||''}:{title:'',type:'task',linkedTask:'',assignee:'',note:''});
   const set=(k,v)=>setF(p=>({...p,[k]:v}));
   const submit=()=>{if(!f.title.trim())return;onSave({...f});};
   return(<div className="mbd"><div className="modal modal-sm">
     <div className="modal-title">{initial?T.item_edit:T.item_new}</div>
     {!initial&&<div className="banner bn-i" style={{marginBottom:12,fontSize:'.78rem'}}>{T.item_note}</div>}
-    <div className="fr"><div><label className="lbl">{T.title_l}</label><input className="inp" placeholder={T.title_ph} value={f.title} onChange={e=>set('title',e.target.value)} onKeyDown={e=>{if(e.key==='Enter')submit();}} autoFocus/></div></div>
-    <div className="fr"><div><label className="lbl">{T.type_l}</label><div style={{display:'flex',gap:7}}>{['task','bug'].map(t=><label key={t} style={{display:'flex',alignItems:'center',gap:6,cursor:'pointer',padding:'7px 14px',borderRadius:'var(--r)',border:`1px solid ${f.type===t?'var(--accent)':'var(--border)'}`,background:f.type===t?'var(--accent-l)':'transparent',flex:1,justifyContent:'center',userSelect:'none',transition:'all .14s'}}><input type="radio" value={t} checked={f.type===t} onChange={()=>set('type',t)} style={{display:'none'}}/><span style={{fontSize:'.83rem'}}>{t==='task'?'📋 Task':'🐞 Bug'}</span></label>)}</div></div></div>
-    {teamTasks.length>0&&<div className="fr"><div>
+    {(!initial||initial.status==='todo')&&<div className="fr"><div><label className="lbl">{T.title_l}</label><input className="inp" placeholder={T.title_ph} value={f.title} onChange={e=>set('title',e.target.value)} onKeyDown={e=>{if(e.key==='Enter')submit();}} autoFocus/></div></div>}
+    {(!initial||initial.status==='todo')&&<div className="fr"><div><label className="lbl">{T.type_l}</label><div style={{display:'flex',gap:7}}>{['task','bug'].map(t=><label key={t} style={{display:'flex',alignItems:'center',gap:6,cursor:'pointer',padding:'7px 14px',borderRadius:'var(--r)',border:`1px solid ${f.type===t?'var(--accent)':'var(--border)'}`,background:f.type===t?'var(--accent-l)':'transparent',flex:1,justifyContent:'center',userSelect:'none',transition:'all .14s'}}><input type="radio" value={t} checked={f.type===t} onChange={()=>set('type',t)} style={{display:'none'}}/><span style={{fontSize:'.83rem'}}>{t==='task'?'📋 Task':'🐞 Bug'}</span></label>)}</div></div></div>}
+    {(!initial||initial.status==='todo')&&teamTasks.length>0&&<div className="fr"><div>
       <label className="lbl">{T.linked_l}</label>
       <select className="sel" value={f.linkedTask} onChange={e=>set('linkedTask',e.target.value)}>
         <option value="">{T.task_sel}</option>
@@ -1799,7 +1800,8 @@ function ItemModal({initial,teamId,projectTeams,projTasks,onSave,onClose}){
         })}
       </select>
     </div></div>}
-    {members.length>0&&<div className="fr"><div><label className="lbl">{T.assignee_l}</label><select className="sel" value={f.assignee} onChange={e=>set('assignee',e.target.value)}><option value="">{T.person_sel}</option>{members.map(m=><option key={m.id} value={m.name} title={m.name}>{m.name.length>36?m.name.slice(0,36)+'…':m.name}</option>)}</select></div></div>}
+    {(!initial||initial.status==='todo')&&members.length>0&&<div className="fr"><div><label className="lbl">{T.assignee_l}</label><select className="sel" value={f.assignee} onChange={e=>set('assignee',e.target.value)}><option value="">{T.person_sel}</option>{members.map(m=><option key={m.id} value={m.name} title={m.name}>{m.name.length>36?m.name.slice(0,36)+'…':m.name}</option>)}</select></div></div>}
+    <div className="fr"><div><label className="lbl">{T.note_l}</label><textarea className="inp" placeholder={T.note_ph} value={f.note} onChange={e=>set('note',e.target.value.slice(0,300))} rows={2} style={{resize:'none',fontSize:'.82rem'}} autoFocus={initial&&initial.status!=='todo'}/><div style={{textAlign:'right',fontSize:'.72rem',color:'var(--text3)',marginTop:2}}>{f.note.length}/300</div></div></div>
     <div className="form-foot"><button className="btn btn-g" onClick={onClose}>{T.cancel}</button><button className="btn btn-p" onClick={submit}>{initial?T.upd_task:T.add_item}</button></div>
   </div></div>);
 }
@@ -1856,7 +1858,7 @@ function TrackerTab({proj,updateProj}){
   const delItem=id=>updateProj(p=>({...p,items:p.items.filter(i=>i.id!==id)}));
   const onDS=id=>setDrag({itemId:id}),onDE=()=>setDrag({itemId:null});
   const onDrop=(iid,toTeam,status)=>{updateProj(p=>({...p,items:p.items.map(i=>i.id===iid?{...i,teamId:toTeam,status,updatedAt:new Date().toISOString(),updatedBy:window.__un||T.user_fb}:i)}));setDrag({itemId:null});};
-  const doExport=()=>{const rows=items.map(i=>({[T.xls_team]:teams.find(t=>t.id===i.teamId)?.name||'',[T.xls_title]:i.title,[T.xls_type]:i.type.toUpperCase(),[T.xls_status]:T.sl[i.status],[T.xls_linked]:tasks.find(t=>t.id===i.linkedTask)?.name||i.linkedTask||'',[T.xls_assignee]:i.assignee||'',[T.xls_upd_by]:i.updatedBy||'',[T.xls_upd_at]:i.updatedAt?new Date(i.updatedAt).toLocaleString(LOCALE):''}));const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Tracker');XLSX.writeFile(wb,`${proj.name}_tracker.xlsx`);};
+  const doExport=()=>{const rows=items.map(i=>({[T.xls_team]:teams.find(t=>t.id===i.teamId)?.name||'',[T.xls_title]:i.title,[T.xls_type]:i.type.toUpperCase(),[T.xls_status]:T.sl[i.status],[T.xls_linked]:tasks.find(t=>t.id===i.linkedTask)?.name||i.linkedTask||'',[T.xls_assignee]:i.assignee||'',[T.xls_note]:i.note||'',[T.xls_upd_by]:i.updatedBy||'',[T.xls_upd_at]:i.updatedAt?new Date(i.updatedAt).toLocaleString(LOCALE):''}));const ws=XLSX.utils.json_to_sheet(rows);const wb=XLSX.utils.book_new();XLSX.utils.book_append_sheet(wb,ws,'Tracker');XLSX.writeFile(wb,`${proj.name}_tracker.xlsx`);};
 
   const doImportTracker=(e)=>{
     const file=e.target.files[0];if(!file)return;
@@ -1885,7 +1887,7 @@ function TrackerTab({proj,updateProj}){
           const statusMap={'TO DO':'todo','YAPILACAK':'todo','IN PROGRESS':'inprogress','DEVAM EDİYOR':'inprogress','IN REVIEW':'review','İNCELEMEDE':'review','COMPLETED':'done','TAMAMLANDI':'done'};
           const rawStatus=String(gc2(r,'Statü','Status')||'').toUpperCase();
           const status=statusMap[rawStatus]||'todo';
-          return{id:uid(),title:String(gc2(r,'Başlık','Title')),type:String(gc2(r,'Tür','Type')||'TASK').toLowerCase()==='bug'?'bug':'task',status,teamId:team.id,linkedTask:String(gc2(r,'Görev','Task')||''),assignee:String(gc2(r,'Sorumlu','Assignee')||''),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),updatedBy:window.__un||T.user_fb};
+          return{id:uid(),title:String(gc2(r,'Başlık','Title')),type:String(gc2(r,'Tür','Type')||'TASK').toLowerCase()==='bug'?'bug':'task',status,teamId:team.id,linkedTask:String(gc2(r,'Görev','Task')||''),assignee:String(gc2(r,'Sorumlu','Assignee')||''),note:String(gc2(r,'Not','Note')||''),createdAt:new Date().toISOString(),updatedAt:new Date().toISOString(),updatedBy:window.__un||T.user_fb};
         });
         if(newItems.length===0){alert(T.al_no_items);return;}
         const newTeams=currentTeams.filter(t=>!teams.find(e=>e.id===t.id));
